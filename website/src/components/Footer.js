@@ -50,8 +50,10 @@ export default function Footer() {
         <div className={styles.bottom}>
           <p className={styles.copy}>© {new Date().getFullYear()} Antico Ristoranté. All rights reserved.</p>
           <div className={styles.credit}>
-            <span>Crafted by</span>
-            <strong> Antigravity Solutions</strong>
+            <span>Crafted with 💛 by </span>
+            <a href="https://antigravitysolutions.ca" target="_blank" rel="noopener noreferrer" className={styles.asnLink}>
+              Antigravity Solutions North
+            </a>
           </div>
         </div>
       </div>

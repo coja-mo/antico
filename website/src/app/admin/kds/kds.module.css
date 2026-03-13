@@ -10,9 +10,88 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-lg);
 }
 
+.kdsHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.soundToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.soundToggle:hover {
+  border-color: var(--border-medium);
+  color: var(--text-secondary);
+}
+
+.soundOn {
+  border-color: var(--success);
+  color: var(--success);
+  background: var(--success-bg);
+}
+
+/* ── Summary Bar ── */
+.summaryBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-md) var(--space-xl);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.summaryItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.summaryValue {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.summaryPending {
+  color: var(--text-muted);
+}
+
+.summaryFired {
+  color: var(--warning);
+}
+
+.summaryLabel {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.summarySep {
+  width: 1px;
+  height: 28px;
+  background: var(--border-subtle);
+}
+
+/* ── Grid ── */
 .kdsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -22,18 +101,39 @@
   align-content: start;
 }
 
+/* ── Cards ── */
 .kdsCard {
   background: var(--bg-card);
   border: 2px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  transition: border-color var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .kdsCard:hover {
   border-color: var(--border-medium);
 }
 
+.kdsCardAllFired {
+  border-color: rgba(74, 222, 128, 0.25);
+}
+
+.kdsCardAllFired:hover {
+  border-color: rgba(74, 222, 128, 0.4);
+  box-shadow: 0 0 20px rgba(74, 222, 128, 0.08);
+}
+
+.kdsCardUrgent {
+  border-color: rgba(248, 113, 113, 0.3);
+  animation: urgentPulse 2s ease-in-out infinite;
+}
+
+@keyframes urgentPulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(248, 113, 113, 0); }
+  50% { box-shadow: 0 0 16px rgba(248, 113, 113, 0.15); }
+}
+
+/* ── Card Header ── */
 .kdsCardHeader {
   display: flex;
   justify-content: space-between;
@@ -43,6 +143,18 @@
   border-bottom: 1px solid var(--border-subtle);
 }
 
+.kdsCardHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.kdsCardHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
 .kdsTableBadge {
   background: var(--gold);
   color: #0a0a0a;
@@ -50,7 +162,12 @@
   border-radius: var(--radius-sm);
   font-size: 0.8rem;
   font-weight: 700;
-  margin-right: var(--space-sm);
+}
+
+.kdsTableName {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .kdsOrderId {
@@ -63,6 +180,54 @@
   color: var(--text-secondary);
 }
 
+/* ── Order Age Badge ── */
+.kdsAge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-variant-numeric: tabular-nums;
+}
+
+.kdsAgeGreen {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.kdsAgeYellow {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+.kdsAgeRed {
+  background: var(--danger-bg);
+  color: var(--danger);
+  animation: urgentTextPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes urgentTextPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* ── Course Progress Bar ── */
+.courseProgress {
+  height: 3px;
+  background: rgba(148, 163, 184, 0.1);
+  overflow: hidden;
+}
+
+.courseProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--warning), var(--gold));
+  border-radius: 0 2px 2px 0;
+  transition: width 0.4s var(--ease-out);
+}
+
+/* ── Items ── */
 .kdsItems {
   padding: var(--space-sm);
 }
@@ -85,6 +250,15 @@
 .kdsItemFired {
   background: rgba(251, 191, 36, 0.08);
   border-left: 3px solid var(--warning);
+}
+
+.kdsItemLongWait {
+  animation: longWaitPulse 2s ease-in-out infinite;
+}
+
+@keyframes longWaitPulse {
+  0%, 100% { background: rgba(248, 113, 113, 0.06); }
+  50% { background: rgba(248, 113, 113, 0.14); }
 }
 
 .kdsItemInfo {
@@ -128,14 +302,28 @@
   gap: var(--space-sm);
 }
 
+/* ── Timer Colors ── */
 .kdsTimer {
   font-size: 0.75rem;
-  color: var(--text-muted);
   min-width: 30px;
   text-align: right;
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
+.kdsTimerGreen {
+  color: var(--success);
+}
+
+.kdsTimerYellow {
+  color: var(--warning);
+}
+
+.kdsTimerRed {
+  color: var(--danger);
+}
+
+/* ── Action Buttons ── */
 .fireBtn,
 .bumpBtn,
 .rushBtn {
@@ -178,20 +366,34 @@
   background: rgba(248, 113, 113, 0.2);
 }
 
+/* ── Card Footer ── */
 .kdsCardFooter {
   display: flex;
   justify-content: space-between;
   padding: var(--space-sm) var(--space-lg);
   background: var(--bg-elevated);
   border-top: 1px solid var(--border-subtle);
-}
-
-.kdsItemCount,
-.kdsFiredCount {
   font-size: 0.75rem;
   color: var(--text-muted);
 }
 
-.kdsFiredCount {
-  color: var(--warning);
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .kdsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .summaryBar {
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .summaryValue {
+    font-size: 1.1rem;
+  }
+
+  .kdsCardHeader {
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
 }
