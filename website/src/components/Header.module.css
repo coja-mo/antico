@@ -27,6 +27,13 @@
   justify-content: space-between;
 }
 
+/* ── Left group: Logo + Home & Menu ── */
+.leftGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+}
+
 .logo {
   display: flex;
   align-items: center;
@@ -45,12 +52,25 @@
   filter: drop-shadow(0 0 12px var(--neon-yellow-glow)) drop-shadow(0 0 25px rgba(255, 215, 0, 0.3));
 }
 
-.nav {
+.leftNav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+/* ── Right group: The Chef, Gallery, Contact, Reserve ── */
+.rightNav {
   display: flex;
   align-items: center;
   gap: var(--space-xl);
 }
 
+/* On desktop, hide the duplicated left links inside rightNav */
+.rightNav .navLink:nth-child(-n+2) {
+  display: none;
+}
+
+/* ── Nav links ── */
 .navLink {
   font-family: var(--font-body);
   font-size: 0.85rem;
@@ -138,7 +158,13 @@
     display: flex;
   }
 
-  .nav {
+  /* Hide desktop-only left nav */
+  .leftNav {
+    display: none;
+  }
+
+  /* Mobile overlay — show ALL links including Home & Menu */
+  .rightNav {
     position: fixed;
     top: 0;
     left: 0;
@@ -151,6 +177,11 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--transition-base);
+  }
+
+  /* Show the duplicated left links on mobile */
+  .rightNav .navLink:nth-child(-n+2) {
+    display: inline;
   }
 
   .navOpen {
