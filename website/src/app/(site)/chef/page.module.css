@@ -1,0 +1,123 @@
+.chefPage { padding-top: var(--header-height); }
+
+.hero {
+  padding: var(--space-5xl) var(--space-xl) var(--space-4xl);
+  text-align: center;
+  background: radial-gradient(ellipse at center, #1a1510 0%, var(--bg-primary) 70%);
+}
+.heroContent { max-width: var(--max-width-narrow); margin: 0 auto; }
+.script {
+  font-family: var(--font-script);
+  font-size: 1.8rem;
+  color: var(--neon-pink);
+  margin-bottom: var(--space-sm);
+  animation: neonPulsePink 3s ease-in-out infinite;
+}
+.divider { width: 60px; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: var(--space-md) auto; }
+.subtitle { color: var(--text-muted); font-style: italic; letter-spacing: 0.05em; }
+.goldDivider { width: 60px; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: var(--space-lg) 0; }
+.inner { max-width: var(--max-width); margin: 0 auto; padding: 0 var(--space-xl); }
+
+.story { padding: var(--space-5xl) var(--space-xl); }
+.storyContent { max-width: var(--max-width-narrow); margin: 0 auto; }
+.storyContent h2 { margin-bottom: 0; }
+.storyContent p { font-size: 1.05rem; line-height: 1.9; margin-bottom: var(--space-lg); }
+
+/* Timeline */
+.timeline {
+  padding: var(--space-4xl) var(--space-xl) var(--space-5xl);
+  background: var(--bg-secondary);
+  text-align: center;
+}
+.timelineTitle { text-align: center; }
+.timelineTrack { position: relative; max-width: 600px; margin: 0 auto; }
+.timelineTrack::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+}
+.timelineItem {
+  display: flex;
+  gap: var(--space-xl);
+  align-items: flex-start;
+  margin-bottom: var(--space-2xl);
+  position: relative;
+}
+.timelineDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+  margin-top: 8px;
+  position: relative;
+  left: 15px;
+  box-shadow: 0 0 10px var(--gold-glow);
+}
+.timelineCard {
+  text-align: left;
+  padding-left: var(--space-md);
+}
+.timelineYear {
+  font-size: 0.8rem;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.timelineCard h3 {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  margin: var(--space-xs) 0;
+}
+.timelineCard p { font-size: 0.9rem; color: var(--text-secondary); }
+
+/* Art Section */
+.artSection {
+  padding: var(--space-5xl) var(--space-xl);
+  background: var(--bg-primary);
+}
+.artContent {
+  max-width: var(--max-width-narrow);
+  margin: 0 auto;
+  text-align: center;
+}
+.artContent .goldDivider { margin: var(--space-lg) auto; }
+.artContent p { font-size: 1.05rem; line-height: 1.8; }
+
+/* Celebrity */
+.celebrity {
+  padding: var(--space-4xl) var(--space-xl) var(--space-5xl);
+  background: var(--bg-secondary);
+  text-align: center;
+}
+.celebrityDesc { max-width: var(--max-width-narrow); margin: 0 auto var(--space-2xl); font-size: 1.05rem; }
+.celebrityGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-lg);
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+.celebrityCard {
+  padding: var(--space-2xl);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+}
+.celebrityCard:hover {
+  border-color: var(--border-medium);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-glow-gold);
+}
+.star { display: block; font-size: 1.5rem; color: var(--gold); margin-bottom: var(--space-sm); }
+.celebrityCard p { font-family: var(--font-heading); font-size: 1.1rem; color: var(--text-primary); }
+
+@media (max-width: 768px) {
+  .celebrityGrid { grid-template-columns: 1fr 1fr; }
+}

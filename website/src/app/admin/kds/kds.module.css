@@ -1,0 +1,197 @@
+/* KDS Styles */
+
+.kdsPage {
+  height: calc(100vh - var(--space-2xl) * 2);
+  display: flex;
+  flex-direction: column;
+}
+
+.kdsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xl);
+}
+
+.kdsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-md);
+  flex: 1;
+  overflow-y: auto;
+  align-content: start;
+}
+
+.kdsCard {
+  background: var(--bg-card);
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.kdsCard:hover {
+  border-color: var(--border-medium);
+}
+
+.kdsCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.kdsTableBadge {
+  background: var(--gold);
+  color: #0a0a0a;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-right: var(--space-sm);
+}
+
+.kdsOrderId {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.kdsGuest {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.kdsItems {
+  padding: var(--space-sm);
+}
+
+.kdsItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: 2px;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+
+.kdsItemPending {
+  background: rgba(148, 163, 184, 0.05);
+  border-left: 3px solid var(--text-muted);
+}
+
+.kdsItemFired {
+  background: rgba(251, 191, 36, 0.08);
+  border-left: 3px solid var(--warning);
+}
+
+.kdsItemInfo {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+}
+
+.kdsItemQty {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  min-width: 24px;
+}
+
+.kdsItemName {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.kdsItemNotes {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--warning);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.kdsItemMods {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.kdsItemActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.kdsTimer {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  min-width: 30px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.fireBtn,
+.bumpBtn,
+.rushBtn {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.fireBtn {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.fireBtn:hover {
+  background: rgba(251, 191, 36, 0.2);
+}
+
+.bumpBtn {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.bumpBtn:hover {
+  background: rgba(74, 222, 128, 0.2);
+}
+
+.rushBtn {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  padding: 4px 6px;
+}
+
+.rushBtn:hover {
+  background: rgba(248, 113, 113, 0.2);
+}
+
+.kdsCardFooter {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.kdsItemCount,
+.kdsFiredCount {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.kdsFiredCount {
+  color: var(--warning);
+}

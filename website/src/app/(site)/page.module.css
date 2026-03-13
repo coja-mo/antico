@@ -1,0 +1,404 @@
+/* ═══════════════════════════════════════════════
+   HOMEPAGE STYLES
+   ═══════════════════════════════════════════════ */
+
+.sectionLabel {
+  font-family: var(--font-script);
+  font-size: 1.5rem;
+  color: var(--neon-pink);
+  margin-bottom: var(--space-sm);
+  animation: neonPulsePink 3s ease-in-out infinite;
+}
+
+.goldDivider {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: var(--space-lg) 0 var(--space-2xl);
+}
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 40%, #1e1810 0%, #14100a 40%, #0a0a0a 80%);
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 30% 40%, rgba(255, 215, 0, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(255, 107, 157, 0.025) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.heroOverlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: calc(var(--header-height) + 40px) var(--space-2xl) 120px;
+  animation: fadeIn 1s ease both;
+}
+
+.heroGreeting {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-2xl);
+  animation: fadeInUp 0.8s ease both 0.2s;
+}
+
+.heroLogo {
+  margin: 0 auto var(--space-md);
+  animation: fadeInUp 0.8s ease both 0.4s;
+  position: relative;
+}
+
+.heroLogo::after {
+  content: '';
+  position: absolute;
+  inset: -30%;
+  background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.12) 0%, transparent 60%);
+  z-index: 0;
+  pointer-events: none;
+  animation: heroGlowPulse 4s ease-in-out infinite;
+}
+
+@keyframes heroGlowPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.heroLogoImg {
+  width: min(550px, 85vw);
+  height: auto;
+  object-fit: contain;
+  image-rendering: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.heroAmore {
+  font-family: var(--font-script);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  color: var(--neon-pink);
+  letter-spacing: 0.03em;
+  animation: fadeInUp 0.8s ease both 0.6s, neonPulsePink 3s ease-in-out infinite;
+  margin-bottom: var(--space-xl);
+}
+
+.heroDivider {
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 0 auto var(--space-xl);
+  animation: fadeInUp 0.8s ease both 0.7s;
+}
+
+.heroTagline {
+  font-family: var(--font-heading);
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  font-style: italic;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-sm);
+  animation: fadeInUp 0.8s ease both 0.8s;
+}
+
+.heroSub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-2xl);
+  animation: fadeInUp 0.8s ease both 0.9s;
+}
+
+.heroCtas {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeInUp 0.8s ease both 1s;
+}
+
+.heroScroll {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  animation: fadeIn 1s ease both 1.5s;
+}
+
+.heroScroll span {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.scrollLine {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.2); }
+}
+
+/* ── About ── */
+.about {
+  padding: var(--space-5xl) var(--space-xl);
+  background: var(--bg-primary);
+}
+
+.aboutInner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: var(--space-4xl);
+  align-items: center;
+}
+
+.aboutText h2 {
+  margin-bottom: 0;
+}
+
+.aboutDesc {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin-bottom: var(--space-md);
+}
+
+.aboutLink {
+  display: inline-block;
+  margin-top: var(--space-lg);
+  color: var(--gold);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transition: all var(--transition-fast);
+}
+
+.aboutLink:hover {
+  color: var(--gold-light);
+  transform: translateX(4px);
+}
+
+.aboutVisual {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.aboutCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl) var(--space-2xl);
+  text-align: center;
+  transition: all var(--transition-base);
+}
+
+.aboutCard:hover {
+  border-color: var(--border-medium);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow-gold);
+}
+
+.aboutCardNum {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.aboutCardLabel {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ── Menu Preview ── */
+.menuPreview {
+  padding: var(--space-5xl) var(--space-xl);
+  background: var(--bg-secondary);
+}
+
+.menuPreviewInner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.dishGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-xl);
+  margin-top: var(--space-2xl);
+}
+
+.dishCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2xl);
+  text-align: left;
+  transition: all var(--transition-base);
+}
+
+.dishCard:hover {
+  border-color: var(--border-medium);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-glow-gold);
+}
+
+.dishName {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.dishDesc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* ── Atmosphere ── */
+.atmosphere {
+  padding: var(--space-5xl) var(--space-xl);
+  background: var(--bg-primary);
+}
+
+.atmosphereInner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.atmosphereGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-xl);
+}
+
+.atmCard {
+  padding: var(--space-2xl) var(--space-lg);
+  text-align: center;
+}
+
+.atmIcon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: var(--space-md);
+}
+
+.atmCard h4 {
+  font-family: var(--font-heading);
+  margin-bottom: var(--space-sm);
+  color: var(--text-primary);
+}
+
+.atmCard p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* ── CTA ── */
+.ctaSection {
+  padding: var(--space-5xl) var(--space-xl);
+  background: linear-gradient(135deg, #1a1508 0%, #0a0a0a 50%, #150a10 100%);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.ctaSection::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 30% 50%, rgba(255, 215, 0, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 70% 50%, rgba(255, 107, 157, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.ctaInner {
+  position: relative;
+  max-width: var(--max-width-narrow);
+  margin: 0 auto;
+}
+
+.ctaScript {
+  font-family: var(--font-script);
+  font-size: 2rem;
+  color: var(--neon-pink);
+  margin-bottom: var(--space-md);
+  animation: neonPulsePink 3s ease-in-out infinite;
+}
+
+.ctaInner h2 {
+  margin-bottom: var(--space-md);
+}
+
+.ctaDesc {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-2xl);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .aboutInner {
+    grid-template-columns: 1fr;
+    gap: var(--space-2xl);
+  }
+
+  .aboutVisual {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .aboutCard {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .dishGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .atmosphereGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+  }
+}

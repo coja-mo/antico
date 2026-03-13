@@ -1,0 +1,161 @@
+{
+  "restaurant": {
+    "name": "Antico",
+    "fullName": "Antico Ristoranté",
+    "tagline": "Life's Too Short For Average Food",
+    "greeting": "Ciao Friends",
+    "heroMessage": "WE are open Wed to Sat. Spring is coming and the patio will be waiting!",
+    "yearEstablished": 2012,
+    "cuisine": "Fine Italian",
+    "website": "https://anticorestaurant.ca"
+  },
+
+  "contact": {
+    "address": "6 Village Court, Sault Ste Marie, ON",
+    "phone": "705-255-0161",
+    "phoneNote": "Call or text",
+    "email": "Acomegna@Hotmail.com",
+    "reservationNote": "Use the reservation form on the main page to make a reservation. Just give us a few details about the size of your party, the occasion and the reservation time and we promise you a wonderful dining experience."
+  },
+
+  "hours": {
+    "openDays": "Wednesday to Saturday",
+    "note": "Patio available in spring/summer"
+  },
+
+  "chef": {
+    "name": "Arturo Comegna",
+    "title": "Owner and Head Chef",
+    "nickname": "Art",
+    "hometown": "Casoli, Abruzzo, Italy",
+    "bio": "Arturo Comegna was born in the small town of Casoli in the Abruzzo region of Italy. Arturo has always had a strong passion for fine Italian cuisine. From a young age he began perfecting his delicious recipes and started his culinary career at the age of 12.",
+    "history": "Art moved to Sault Ste. Marie where he followed his passion for food by acquiring Rico's restaurant on Spring St. Later Arturo opened the highly successful Arturo Ristoranté on Queen Street. Building on the success of Arturo's which is now owned by his sons Chris & Thomas he opened Antico Ristoranté in 2012.",
+    "artNote": "Antico is not only a testament to Arturo's incredible food skills, but also his artistic skills; the restaurant walls are used to display his beautiful paintings that he created over the years.",
+    "celebrities": "More than a few celebrities have joined Art in the kitchen over the years. Great Big Sea, Rankin Family, Maria Bello and Christopher Plummer just to name a few.",
+    "sons": ["Chris", "Thomas"],
+    "previousRestaurants": [
+      { "name": "Rico's", "location": "Spring St" },
+      { "name": "Arturo Ristoranté", "location": "Queen Street" }
+    ]
+  },
+
+  "menu": {
+    "appetizers": [
+      {
+        "name": "Lobster Ravioli",
+        "description": "Served in a fresh lobster blush sauce"
+      },
+      {
+        "name": "Crispy Deep-Fried Calamari",
+        "description": "Served with our special seafood sauce"
+      },
+      {
+        "name": "Shrimp Putanesca",
+        "description": "Sautéed shrimp with olive oil, capers, black olives, tomatoes, fresh herbs and white wine"
+      },
+      {
+        "name": "Blackened Sea Scallops",
+        "description": "Spicy seasoned scallops, served with homemade apple mango salsa"
+      },
+      {
+        "name": "Escargot",
+        "description": "Sautéed escargot in butter, white wine, cream, lemon juice and fresh herbs"
+      },
+      {
+        "name": "Antipasto Misto",
+        "description": "Prosciutto, bocconcini cheese, roasted red peppers, salami, and black olives"
+      },
+      {
+        "name": "Cajun Chicken Bites",
+        "description": "Spicy bites toasted with Cajun sauce & sesame seeds, served on noodles"
+      }
+    ],
+
+    "salads": [
+      {
+        "name": "House Salad",
+        "description": "Spring mix, with cucumbers, onions, tomatoes, and house dressing"
+      },
+      {
+        "name": "Greek Salad",
+        "description": "Tomatoes, red peppers, cucumber, onions, black olives, romaine, and feta cheese"
+      },
+      {
+        "name": "Caesar Salad",
+        "description": "Romaine lettuce with croutons, lemon, parmesan cheese and Caesar dressing"
+      },
+      {
+        "name": "Caprese",
+        "description": "Fresh tomatoes, bocconcini cheese, sliced and finished with fresh basil and olive oil"
+      },
+      {
+        "name": "Red Beet Salad",
+        "description": "Red beets, oranges, goat cheese with honey/olive oil dressing"
+      }
+    ],
+
+    "entrees": {
+      "note": "All entrees served with house salad (upgrade to Greek or Caesar)",
+      "items": [
+        {
+          "name": "Gnocchi Gorgonzola",
+          "description": "Served in a fresh gorgonzola sauce"
+        },
+        {
+          "name": "Butternut Squash Ravioli",
+          "description": "Served in a sage, parmigiana butter sauce"
+        },
+        {
+          "name": "Lobster Ravioli",
+          "description": "Served in a fresh lobster blush sauce"
+        },
+        {
+          "name": "Linguini Di Mare",
+          "description": "Served in a tomato sauce, with calamari, mussels & shrimp"
+        },
+        {
+          "name": "Chicken or Veal Parmigiana",
+          "description": "Breaded chicken or veal, baked with tomato sauce, provolone and mozzarella cheese, served with penne in fresh tomato basil sauce"
+        },
+        {
+          "name": "Chicken Portofino",
+          "description": "Chicken breast, pan seared, topped with sundried tomatoes, artichoke hearts, provolone cheese, wine sauce, served with gnocchi gorgonzola"
+        },
+        {
+          "name": "Veal Saltimbocca",
+          "description": "Pan seared veal, with olive oil, sage, capers, lemon juice, white wine, topped with prosciutto, provolone cheese, served with penne in a tomato basil sauce"
+        },
+        {
+          "name": "Veal Pizzaiola",
+          "description": "Pan seared veal in a tomato basil sauce with white wine, capers, served with penne in a tomato basil sauce"
+        },
+        {
+          "name": "Filet Mignon",
+          "description": "Centre cut 8oz filet, cooked to your liking, topped with gorgonzola butter and a demi glaze, served with your choice of vegetables or fettuccini alfredo"
+        },
+        {
+          "name": "Fresh Pickerel",
+          "description": "Pan seared pickerel, with sage, capers, olive oil, white wine, served with lobster ravioli"
+        }
+      ],
+      "addOns": [
+        "Gnocchi Gorgonzola",
+        "Lobster Ravioli",
+        "Beef Ravioli",
+        "Butternut Squash Ravioli"
+      ]
+    },
+
+    "desserts": {
+      "note": "We always have delightful desserts to top off your dinner, these are always changing. Ask your server for details.",
+      "featured": "Art's Tiramisu"
+    }
+  },
+
+  "navigation": [
+    { "label": "Home", "path": "/" },
+    { "label": "The Menu", "path": "/the-menu" },
+    { "label": "Meet The Chef", "path": "/meet-the-chef" },
+    { "label": "Contact Us", "path": "/contact-us" }
+  ]
+}

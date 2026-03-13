@@ -1,0 +1,618 @@
+/* ═══════════════════════════════════════════════
+   POS TERMINAL — Standalone Full-Screen
+   ═══════════════════════════════════════════════ */
+
+.posApp {
+  min-height: 100vh;
+  background: #080808;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ── */
+.posHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: #0c0c0c;
+  border-bottom: 1px solid rgba(255 255 255 / 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.posHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.posLogo {
+  width: 60px;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.85;
+}
+
+.posDivider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255 255 255 / 0.08);
+}
+
+.posSystemLabel {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: rgba(255 255 255 / 0.3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.posHeaderCenter {
+  display: flex;
+  gap: 4px;
+  background: rgba(255 255 255 / 0.03);
+  border-radius: 6px;
+  padding: 3px;
+}
+
+.posViewTab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  color: rgba(255 255 255 / 0.4);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.posViewTab:hover { color: rgba(255 255 255 / 0.6); }
+.posViewTabActive { background: rgba(255 255 255 / 0.06); color: var(--text-primary); font-weight: 500; }
+
+.posHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.posTime {
+  font-size: 0.78rem;
+  color: rgba(255 255 255 / 0.35);
+  font-variant-numeric: tabular-nums;
+}
+
+.posAdminLink {
+  font-size: 0.72rem;
+  color: rgba(255 255 255 / 0.3);
+  text-decoration: none;
+  padding: 6px 12px;
+  border: 1px solid rgba(255 255 255 / 0.06);
+  border-radius: 4px;
+  transition: all 0.12s;
+}
+
+.posAdminLink:hover { border-color: rgba(255 255 255 / 0.12); color: rgba(255 255 255 / 0.5); }
+
+/* ── Floor View ── */
+.floorView {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.floorLegend {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+  padding: 10px 16px;
+  background: rgba(255 255 255 / 0.02);
+  border: 1px solid rgba(255 255 255 / 0.05);
+  border-radius: 8px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: rgba(255 255 255 / 0.4);
+  text-transform: capitalize;
+}
+
+.legendDot { width: 8px; height: 8px; border-radius: 50%; }
+
+.refreshBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  font-size: 0.72rem;
+  color: rgba(255 255 255 / 0.3);
+  border: 1px solid rgba(255 255 255 / 0.06);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.refreshBtn:hover { border-color: rgba(255 255 255 / 0.12); color: rgba(255 255 255 / 0.5); }
+
+.floorZone {
+  margin-bottom: 24px;
+}
+
+.zoneLabel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255 255 255 / 0.2);
+  margin-bottom: 10px;
+  padding-left: 2px;
+}
+
+.zoneGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.tableCard {
+  background: rgba(255 255 255 / 0.02);
+  border: 1px solid rgba(255 255 255 / 0.06);
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.12s;
+  text-align: left;
+  position: relative;
+}
+
+.tableCard:hover {
+  border-color: var(--table-color, rgba(255 255 255 / 0.12));
+  background: rgba(255 255 255 / 0.03);
+}
+
+.tableTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.tableNum {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.tableStatusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.tableMeta { margin-bottom: 4px; }
+
+.tableCapacity {
+  font-size: 0.72rem;
+  color: rgba(255 255 255 / 0.3);
+}
+
+.tableStatusText {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255 255 255 / 0.2);
+}
+
+.quickClear {
+  margin-top: 8px;
+  width: 100%;
+  padding: 5px;
+  background: rgba(34, 197, 94, 0.06);
+  border: 1px solid rgba(34, 197, 94, 0.15);
+  border-radius: 4px;
+  font-size: 0.68rem;
+  color: #22c55e;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.quickClear:hover { background: rgba(34, 197, 94, 0.12); }
+
+/* ── Order View ── */
+.orderView {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  height: calc(100vh - 49px);
+  overflow: hidden;
+}
+
+/* Menu Panel */
+.menuPanel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid rgba(255 255 255 / 0.06);
+}
+
+.menuTabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255 255 255 / 0.06);
+  padding: 0 4px;
+}
+
+.menuTab {
+  flex: 1;
+  padding: 13px 0;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(255 255 255 / 0.35);
+  cursor: pointer;
+  transition: all 0.12s;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.menuTab:hover { color: rgba(255 255 255 / 0.6); }
+.menuTabActive { color: var(--gold); border-bottom-color: var(--gold); }
+
+.menuGrid {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  padding: 1px;
+  background: rgba(255 255 255 / 0.02);
+  align-content: start;
+}
+
+.menuItem {
+  padding: 16px 14px;
+  background: #0a0a0a;
+  cursor: pointer;
+  transition: all 0.1s;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: none;
+}
+
+.menuItem:hover { background: rgba(255 255 255 / 0.04); }
+.menuItem:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.menuItemName { font-size: 0.82rem; color: var(--text-primary); font-weight: 500; line-height: 1.3; }
+.menuItemPrice { font-size: 0.75rem; color: var(--gold); }
+
+.menuEmpty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  color: rgba(255 255 255 / 0.2);
+  font-size: 0.82rem;
+}
+
+/* Check Panel */
+.checkPanel {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 49px);
+  background: #0c0c0c;
+}
+
+.checkHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255 255 255 / 0.06);
+}
+
+.checkTitle {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.checkSub {
+  font-size: 0.72rem;
+  color: rgba(255 255 255 / 0.3);
+  margin-top: 2px;
+}
+
+.checkStatus {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.checkEmpty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: rgba(255 255 255 / 0.2);
+  font-size: 0.85rem;
+}
+
+.openOrderBtn {
+  padding: 10px 24px;
+  background: var(--gold);
+  color: #0a0a0a;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.openOrderBtn:hover { background: var(--gold-light); }
+
+/* Check Items */
+.checkItems {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.checkItemsEmpty {
+  padding: 40px 20px;
+  text-align: center;
+  color: rgba(255 255 255 / 0.15);
+  font-size: 0.82rem;
+}
+
+.checkItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(255 255 255 / 0.04);
+}
+
+.checkItem:last-child { border-bottom: none; }
+
+.checkItemLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkItemQty {
+  font-size: 0.78rem;
+  color: rgba(255 255 255 / 0.3);
+  min-width: 16px;
+}
+
+.checkItemName {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.checkItemStatus {
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+
+.itemStatusPending { background: rgba(255 255 255 / 0.04); color: rgba(255 255 255 / 0.3); }
+.itemStatusFired { background: rgba(251, 191, 36, 0.08); color: var(--warning); }
+.itemStatusCompleted { background: rgba(74, 222, 128, 0.08); color: var(--success); }
+
+.checkItemPrice {
+  font-size: 0.82rem;
+  color: rgba(255 255 255 / 0.5);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Course Firing */
+.courseSection {
+  padding: 12px 20px;
+  border-top: 1px solid rgba(255 255 255 / 0.06);
+  border-bottom: 1px solid rgba(255 255 255 / 0.06);
+}
+
+.courseSectionLabel {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: rgba(255 255 255 / 0.25);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.courseButtons {
+  display: flex;
+  gap: 6px;
+}
+
+.courseBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 7px;
+  background: rgba(251, 191, 36, 0.06);
+  border: 1px solid rgba(251, 191, 36, 0.12);
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--warning);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.courseBtn:hover { background: rgba(251, 191, 36, 0.12); }
+
+/* Totals */
+.checkTotals {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255 255 255 / 0.06);
+}
+
+.totalLine {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 0.82rem;
+  color: rgba(255 255 255 / 0.4);
+  font-variant-numeric: tabular-nums;
+}
+
+.totalLineGrand {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding-top: 10px;
+  margin-top: 6px;
+  border-top: 1px solid rgba(255 255 255 / 0.08);
+}
+
+.payBtn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px;
+  background: var(--gold);
+  color: #0a0a0a;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.payBtn:hover { background: var(--gold-light); }
+.payBtn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* Payment Section */
+.paymentSection {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255 255 255 / 0.06);
+}
+
+.paymentTip {
+  margin-bottom: 14px;
+}
+
+.paymentTip label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: rgba(255 255 255 / 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.tipPresets {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.tipPreset {
+  flex: 1;
+  padding: 7px;
+  border: 1px solid rgba(255 255 255 / 0.06);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: rgba(255 255 255 / 0.4);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.tipPreset:hover { border-color: rgba(255 255 255 / 0.12); }
+.tipPresetActive { border-color: rgba(212, 168, 75, 0.3); color: var(--gold); background: rgba(212, 168, 75, 0.06); }
+
+.tipInput {
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255 255 255 / 0.03);
+  border: 1px solid rgba(255 255 255 / 0.06);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  text-align: right;
+}
+
+.tipInput:focus { border-color: rgba(212, 168, 75, 0.3); outline: none; }
+
+.paymentButtons {
+  display: flex;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.payMethodBtn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 12px;
+  background: rgba(255 255 255 / 0.02);
+  border: 1px solid rgba(255 255 255 / 0.06);
+  border-radius: 8px;
+  color: rgba(255 255 255 / 0.5);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.payMethodBtn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(212, 168, 75, 0.04);
+}
+
+.payMethodBtn span {
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.cancelPayBtn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px;
+  font-size: 0.75rem;
+  color: rgba(255 255 255 / 0.25);
+  cursor: pointer;
+  transition: all 0.12s;
+  text-align: center;
+}
+
+.cancelPayBtn:hover { color: rgba(255 255 255 / 0.5); }
+
+/* Back to Floor */
+.backToFloor {
+  padding: 12px 20px;
+  border-top: 1px solid rgba(255 255 255 / 0.04);
+  text-align: center;
+  font-size: 0.75rem;
+  color: rgba(255 255 255 / 0.2);
+  cursor: pointer;
+  transition: color 0.12s;
+}
+
+.backToFloor:hover { color: rgba(255 255 255 / 0.4); }

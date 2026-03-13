@@ -1,0 +1,43 @@
+.contactPage { padding-top: var(--header-height); }
+.hero { padding: var(--space-5xl) var(--space-xl) var(--space-4xl); text-align: center; background: radial-gradient(ellipse at center, #1a1510 0%, var(--bg-primary) 70%); }
+.heroContent { max-width: var(--max-width-narrow); margin: 0 auto; }
+.script { font-family: var(--font-script); font-size: 1.8rem; color: var(--neon-pink); margin-bottom: var(--space-sm); animation: neonPulsePink 3s ease-in-out infinite; }
+.divider { width: 60px; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: var(--space-md) auto; }
+.subtitle { color: var(--text-muted); font-style: italic; }
+
+.content { padding: var(--space-4xl) var(--space-xl) var(--space-5xl); }
+.inner { max-width: var(--max-width); margin: 0 auto; }
+
+.contactGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-xl); margin-bottom: var(--space-4xl); }
+
+.contactCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2xl);
+  text-align: center;
+  transition: all var(--transition-base);
+}
+.contactCard:hover { border-color: var(--border-medium); transform: translateY(-3px); box-shadow: var(--shadow-glow-gold); }
+.icon { font-size: 1.5rem; display: block; margin-bottom: var(--space-md); }
+.contactCard h3 { font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: var(--space-sm); color: var(--gold); }
+.contactCard p { font-size: 0.95rem; color: var(--text-secondary); }
+.contactCard a { color: var(--text-primary); transition: color var(--transition-fast); }
+.contactCard a:hover { color: var(--gold); }
+.small { font-size: 0.8rem !important; color: var(--text-muted) !important; margin-top: 2px; }
+
+.mapSection { margin-bottom: var(--space-4xl); }
+.mapPlaceholder { border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-subtle); }
+
+.messageNote {
+  text-align: center;
+  max-width: var(--max-width-narrow);
+  margin: 0 auto;
+}
+.messageNote p { font-size: 1.05rem; line-height: 1.8; color: var(--text-secondary); margin-bottom: var(--space-md); }
+.messageNote a { color: var(--gold); font-weight: 500; }
+.messageNote a:hover { color: var(--gold-light); }
+.signoff { font-family: var(--font-heading); font-style: italic; color: var(--text-muted) !important; margin-top: var(--space-lg) !important; }
+
+@media (max-width: 768px) { .contactGrid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .contactGrid { grid-template-columns: 1fr; } }
