@@ -1,7 +1,23 @@
+/* ═══════════════════════════════════════════════
+   FOOTER — PREMIUM STYLES
+   ═══════════════════════════════════════════════ */
+
 .footer {
   background: var(--bg-secondary);
   border-top: 1px solid var(--border-subtle);
   padding: var(--space-4xl) var(--space-xl) var(--space-2xl);
+  position: relative;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.3;
 }
 
 .inner {
@@ -27,6 +43,11 @@
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 0 10px var(--neon-yellow-glow));
+  transition: filter var(--transition-base);
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 15px var(--neon-yellow-glow)) drop-shadow(0 0 30px rgba(255, 215, 0, 0.2));
 }
 
 .tagline {
@@ -55,17 +76,31 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   margin-bottom: var(--space-sm);
+  position: relative;
+}
+
+.colTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 24px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.4;
 }
 
 .col a,
 .col p {
   font-size: 0.9rem;
   color: var(--text-secondary);
-  transition: color var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .col a:hover {
-  color: var(--text-primary);
+  color: var(--gold);
+  transform: translateX(3px);
+  display: inline-block;
 }
 
 .small {
@@ -78,6 +113,24 @@
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--border-medium), transparent);
   margin-bottom: var(--space-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  animation: footerShimmer 6s ease-in-out infinite;
+}
+
+@keyframes footerShimmer {
+  0% { left: -50%; }
+  100% { left: 150%; }
 }
 
 .bottom {
@@ -98,6 +151,11 @@
 
 .credit strong {
   color: var(--text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.credit:hover strong {
+  color: var(--gold);
 }
 
 @media (max-width: 768px) {

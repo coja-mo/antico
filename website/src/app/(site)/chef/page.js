@@ -1,14 +1,35 @@
+'use client';
+import { useEffect, useRef } from 'react';
+import { IconStar } from '@/components/Icons';
 import styles from './page.module.css';
 
-export const metadata = {
-  title: 'Meet The Chef | Antico Ristoranté',
-  description: 'Meet Chef Arturo Comegna — from the hills of Abruzzo, Italy to creating one of Sault Ste. Marie\'s most celebrated dining experiences.',
-};
+function useScrollReveal() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const targets = el.querySelectorAll('[data-reveal]');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add(styles.revealed);
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    targets.forEach(t => io.observe(t));
+    return () => io.disconnect();
+  }, []);
+  return ref;
+}
 
 export default function ChefPage() {
+  const revealRef = useScrollReveal();
+
   return (
-    <div className={styles.chefPage}>
+    <div className={styles.chefPage} ref={revealRef}>
       <section className={styles.hero}>
+        <div className={styles.heroOverlay} />
         <div className={styles.heroContent}>
           <p className={styles.script}>Il Maestro</p>
           <h1>Chef Arturo Comegna</h1>
@@ -19,7 +40,7 @@ export default function ChefPage() {
 
       <section className={styles.story}>
         <div className={styles.inner}>
-          <div className={styles.storyContent}>
+          <div className={styles.storyContent} data-reveal>
             <h2>From Casoli to Canada</h2>
             <div className={styles.goldDivider} />
             <p>
@@ -44,8 +65,8 @@ export default function ChefPage() {
       {/* Timeline */}
       <section className={styles.timeline}>
         <div className={styles.inner}>
-          <h2 className={styles.timelineTitle}>The Journey</h2>
-          <div className={styles.goldDivider} style={{ margin: '24px auto 48px' }} />
+          <h2 className={styles.timelineTitle} data-reveal>The Journey</h2>
+          <div className={styles.goldDivider} style={{ margin: '24px auto 48px' }} data-reveal />
           <div className={styles.timelineTrack}>
             {[
               { year: 'Age 12', title: 'Culinary Beginnings', desc: 'Started his culinary career in Casoli, Abruzzo, Italy' },
@@ -54,7 +75,7 @@ export default function ChefPage() {
               { year: '2012', title: 'Antico Ristoranté', desc: 'Opened Antico — a fusion of culinary mastery and art' },
               { year: 'Today', title: 'The Legacy Continues', desc: 'Sons Chris & Thomas carry on the family tradition' },
             ].map((item, i) => (
-              <div key={i} className={styles.timelineItem}>
+              <div key={i} className={styles.timelineItem} data-reveal style={{ animationDelay: `${i * 0.1}s` }}>
                 <div className={styles.timelineDot} />
                 <div className={styles.timelineCard}>
                   <span className={styles.timelineYear}>{item.year}</span>
@@ -70,7 +91,7 @@ export default function ChefPage() {
       {/* Art & Atmosphere */}
       <section className={styles.artSection}>
         <div className={styles.inner}>
-          <div className={styles.artContent}>
+          <div className={styles.artContent} data-reveal>
             <p className={styles.script}>Arte e Cucina</p>
             <h2>Art on Every Wall</h2>
             <div className={styles.goldDivider} />
@@ -86,17 +107,19 @@ export default function ChefPage() {
       {/* Celebrity Section */}
       <section className={styles.celebrity}>
         <div className={styles.inner}>
-          <p className={styles.script}>Ospiti Speciali</p>
-          <h2>A Kitchen Where Stars Cook</h2>
-          <div className={styles.goldDivider} style={{ margin: '24px auto 48px' }} />
-          <p className={styles.celebrityDesc}>
+          <p className={styles.script} data-reveal>Ospiti Speciali</p>
+          <h2 data-reveal>A Kitchen Where Stars Cook</h2>
+          <div className={styles.goldDivider} style={{ margin: '24px auto 48px' }} data-reveal />
+          <p className={styles.celebrityDesc} data-reveal>
             More than a few celebrities have joined Art in the kitchen over the years. 
             These aren't just visits — they're collaborations with a master chef.
           </p>
           <div className={styles.celebrityGrid}>
             {['Christopher Plummer', 'Great Big Sea', 'Rankin Family', 'Maria Bello'].map((name, i) => (
-              <div key={i} className={styles.celebrityCard}>
-                <span className={styles.star}>★</span>
+              <div key={i} className={styles.celebrityCard} data-reveal style={{ animationDelay: `${i * 0.1}s` }}>
+                <span className={styles.star}>
+                  <IconStar size={20} color="var(--gold)" />
+                </span>
                 <p>{name}</p>
               </div>
             ))}

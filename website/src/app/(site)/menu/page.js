@@ -1,18 +1,37 @@
+'use client';
+import { useEffect, useRef } from 'react';
 import styles from './page.module.css';
 import data from '@/data/antico_data.json';
 
-export const metadata = {
-  title: 'The Menu | Antico Ristoranté',
-  description: 'Explore our authentic Italian menu featuring handcrafted pasta, fresh seafood, premium veal, and signature dishes by Chef Arturo Comegna.',
-};
+function useScrollReveal() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const targets = el.querySelectorAll('[data-reveal]');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add(styles.revealed);
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    targets.forEach(t => io.observe(t));
+    return () => io.disconnect();
+  }, []);
+  return ref;
+}
 
 export default function MenuPage() {
   const { menu } = data;
+  const revealRef = useScrollReveal();
 
   return (
-    <div className={styles.menuPage}>
+    <div className={styles.menuPage} ref={revealRef}>
       {/* Hero Banner */}
       <section className={styles.hero}>
+        <div className={styles.heroOverlay} />
         <div className={styles.heroContent}>
           <p className={styles.script}>Buon Appetito</p>
           <h1>The Menu</h1>
@@ -26,7 +45,7 @@ export default function MenuPage() {
         <div className={styles.inner}>
 
           {/* Appetizers */}
-          <div className={styles.category}>
+          <div className={styles.category} data-reveal>
             <div className={styles.categoryHeader}>
               <h2>Appetizers</h2>
               <span className={styles.categoryLine} />
@@ -42,7 +61,7 @@ export default function MenuPage() {
           </div>
 
           {/* Salads */}
-          <div className={styles.category}>
+          <div className={styles.category} data-reveal>
             <div className={styles.categoryHeader}>
               <h2>Salads</h2>
               <span className={styles.categoryLine} />
@@ -57,13 +76,27 @@ export default function MenuPage() {
             </div>
           </div>
 
+          {/* Decorative Break */}
+          <div className={styles.sectionOrnament} data-reveal>
+            <span className={styles.ornamentLine} />
+            <span className={styles.ornamentDiamond} />
+            <span className={styles.ornamentLine} />
+          </div>
+
           {/* Quote */}
-          <div className={styles.quote}>
+          <div className={styles.quote} data-reveal>
             <p className={styles.quoteText}>Life's Too Short For Average Food</p>
           </div>
 
+          {/* Another Ornament */}
+          <div className={styles.sectionOrnament} data-reveal>
+            <span className={styles.ornamentLine} />
+            <span className={styles.ornamentDiamond} />
+            <span className={styles.ornamentLine} />
+          </div>
+
           {/* Entrees */}
-          <div className={styles.category}>
+          <div className={styles.category} data-reveal>
             <div className={styles.categoryHeader}>
               <h2>Entrées</h2>
               <span className={styles.categoryLine} />
@@ -88,7 +121,7 @@ export default function MenuPage() {
           </div>
 
           {/* Desserts */}
-          <div className={styles.category}>
+          <div className={styles.category} data-reveal>
             <div className={styles.categoryHeader}>
               <h2>Desserts</h2>
               <span className={styles.categoryLine} />
@@ -96,7 +129,7 @@ export default function MenuPage() {
             <div className={styles.dessertCard}>
               <p className={styles.dessertNote}>{menu.desserts.note}</p>
               <p className={styles.dessertHint}>
-                <span className={styles.dessertStar}>★</span> 
+                <span className={styles.dessertStar}>✦</span> 
                 Hint: {menu.desserts.featured} is delicious.
               </p>
             </div>

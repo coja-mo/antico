@@ -1,11 +1,34 @@
+/* ═══════════════════════════════════════════════
+   CHEF PAGE — PREMIUM STYLES
+   ═══════════════════════════════════════════════ */
+
 .chefPage { padding-top: var(--header-height); }
 
+/* ── Hero ── */
 .hero {
+  position: relative;
   padding: var(--space-5xl) var(--space-xl) var(--space-4xl);
   text-align: center;
-  background: radial-gradient(ellipse at center, #1a1510 0%, var(--bg-primary) 70%);
+  background: radial-gradient(ellipse at 50% 30%, #1a1510 0%, var(--bg-primary) 70%);
+  overflow: hidden;
 }
-.heroContent { max-width: var(--max-width-narrow); margin: 0 auto; }
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(255, 215, 0, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(255, 107, 157, 0.025) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.heroContent {
+  position: relative;
+  max-width: var(--max-width-narrow);
+  margin: 0 auto;
+  animation: chefFadeIn 1s ease both;
+}
+
 .script {
   font-family: var(--font-script);
   font-size: 1.8rem;
@@ -13,24 +36,115 @@
   margin-bottom: var(--space-sm);
   animation: neonPulsePink 3s ease-in-out infinite;
 }
-.divider { width: 60px; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: var(--space-md) auto; }
-.subtitle { color: var(--text-muted); font-style: italic; letter-spacing: 0.05em; }
-.goldDivider { width: 60px; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: var(--space-lg) 0; }
-.inner { max-width: var(--max-width); margin: 0 auto; padding: 0 var(--space-xl); }
 
-.story { padding: var(--space-5xl) var(--space-xl); }
-.storyContent { max-width: var(--max-width-narrow); margin: 0 auto; }
-.storyContent h2 { margin-bottom: 0; }
-.storyContent p { font-size: 1.05rem; line-height: 1.9; margin-bottom: var(--space-lg); }
+.divider {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: var(--space-md) auto;
+}
 
-/* Timeline */
+.subtitle {
+  color: var(--text-muted);
+  font-style: italic;
+  letter-spacing: 0.05em;
+}
+
+.goldDivider {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: var(--space-lg) 0;
+}
+
+.inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-xl);
+}
+
+/* ── Scroll Reveal Base ── */
+.storyContent,
+.timelineTitle,
+.artContent,
+.celebrityDesc,
+.timelineItem,
+.celebrityCard {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.revealed {
+  animation: revealUp 0.7s var(--ease-out) both;
+}
+
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Story ── */
+.story {
+  padding: var(--space-5xl) var(--space-xl);
+  background: var(--bg-primary);
+  position: relative;
+}
+
+.story::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--bg-secondary));
+  pointer-events: none;
+}
+
+.storyContent {
+  max-width: var(--max-width-narrow);
+  margin: 0 auto;
+}
+
+.storyContent h2 {
+  margin-bottom: 0;
+}
+
+.storyContent p {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  margin-bottom: var(--space-lg);
+}
+
+/* ── Timeline ── */
 .timeline {
   padding: var(--space-4xl) var(--space-xl) var(--space-5xl);
   background: var(--bg-secondary);
   text-align: center;
+  position: relative;
 }
-.timelineTitle { text-align: center; }
-.timelineTrack { position: relative; max-width: 600px; margin: 0 auto; }
+
+.timeline::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--bg-primary));
+  pointer-events: none;
+}
+
+.timelineTitle {
+  text-align: center;
+}
+
+.timelineTrack {
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
 .timelineTrack::before {
   content: '';
   position: absolute;
@@ -40,13 +154,20 @@
   width: 1px;
   background: linear-gradient(to bottom, transparent, var(--gold), transparent);
 }
+
 .timelineItem {
   display: flex;
   gap: var(--space-xl);
   align-items: flex-start;
   margin-bottom: var(--space-2xl);
   position: relative;
+  transition: transform var(--transition-base);
 }
+
+.timelineItem:hover {
+  transform: translateX(4px);
+}
+
 .timelineDot {
   width: 12px;
   height: 12px;
@@ -57,11 +178,19 @@
   position: relative;
   left: 15px;
   box-shadow: 0 0 10px var(--gold-glow);
+  transition: all var(--transition-base);
 }
+
+.timelineItem:hover .timelineDot {
+  box-shadow: 0 0 20px var(--gold-glow), 0 0 40px rgba(212, 168, 75, 0.15);
+  transform: scale(1.3);
+}
+
 .timelineCard {
   text-align: left;
   padding-left: var(--space-md);
 }
+
 .timelineYear {
   font-size: 0.8rem;
   color: var(--gold);
@@ -69,33 +198,64 @@
   text-transform: uppercase;
   font-weight: 600;
 }
+
 .timelineCard h3 {
   font-family: var(--font-heading);
   font-size: 1.2rem;
   margin: var(--space-xs) 0;
 }
-.timelineCard p { font-size: 0.9rem; color: var(--text-secondary); }
 
-/* Art Section */
+.timelineCard p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* ── Art Section ── */
 .artSection {
   padding: var(--space-5xl) var(--space-xl);
   background: var(--bg-primary);
 }
+
 .artContent {
   max-width: var(--max-width-narrow);
   margin: 0 auto;
   text-align: center;
 }
-.artContent .goldDivider { margin: var(--space-lg) auto; }
-.artContent p { font-size: 1.05rem; line-height: 1.8; }
 
-/* Celebrity */
+.artContent .goldDivider {
+  margin: var(--space-lg) auto;
+}
+
+.artContent p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+/* ── Celebrity ── */
 .celebrity {
   padding: var(--space-4xl) var(--space-xl) var(--space-5xl);
   background: var(--bg-secondary);
   text-align: center;
+  position: relative;
 }
-.celebrityDesc { max-width: var(--max-width-narrow); margin: 0 auto var(--space-2xl); font-size: 1.05rem; }
+
+.celebrity::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, var(--bg-primary), transparent);
+  pointer-events: none;
+}
+
+.celebrityDesc {
+  max-width: var(--max-width-narrow);
+  margin: 0 auto var(--space-2xl);
+  font-size: 1.05rem;
+}
+
 .celebrityGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -103,21 +263,74 @@
   max-width: var(--max-width);
   margin: 0 auto;
 }
+
 .celebrityCard {
   padding: var(--space-2xl);
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
 }
+
+.celebrityCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
 .celebrityCard:hover {
   border-color: var(--border-medium);
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-glow-gold);
+  transform: translateY(-4px);
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.12), var(--shadow-lg);
 }
-.star { display: block; font-size: 1.5rem; color: var(--gold); margin-bottom: var(--space-sm); }
-.celebrityCard p { font-family: var(--font-heading); font-size: 1.1rem; color: var(--text-primary); }
 
+.celebrityCard:hover::before {
+  opacity: 1;
+}
+
+.star {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto var(--space-sm);
+  background: rgba(212, 168, 75, 0.08);
+  border-radius: 50%;
+  transition: all var(--transition-base);
+}
+
+.celebrityCard:hover .star {
+  background: rgba(212, 168, 75, 0.15);
+  box-shadow: 0 0 15px rgba(212, 168, 75, 0.15);
+  transform: scale(1.1);
+}
+
+.celebrityCard p {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+/* ── Animations ── */
+@keyframes chefFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ── */
 @media (max-width: 768px) {
   .celebrityGrid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .celebrityGrid { grid-template-columns: 1fr; }
 }

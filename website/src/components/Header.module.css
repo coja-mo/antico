@@ -81,9 +81,24 @@
   width: 100%;
 }
 
+/* Active nav link */
+.navLinkActive {
+  color: var(--gold) !important;
+}
+
+.navLinkActive::after {
+  width: 100% !important;
+  background: var(--gold) !important;
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+
 .reserveBtn {
   padding: 10px 24px !important;
   font-size: 0.8rem !important;
+}
+
+.reserveBtnActive {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.25);
 }
 
 .hamburger {
@@ -145,5 +160,9 @@
 
   .navLink {
     font-size: 1.2rem;
+  }
+
+  .navLinkActive::after {
+    bottom: -6px;
   }
 }
