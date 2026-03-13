@@ -23,17 +23,21 @@ export async function PATCH(request, { params }) {
 
     // Close order
     if (body.action === 'close') {
-      const items = db.prepare('SELECT price, quantity FROM order_items WHERE order_id = ?').all(id);
-      const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      const tax = subtotal * 0.13; // Ontario HST
+      const items = db.prepare("SELECT price, quantity, status FROM order_items WHERE order_id = ?").all(id);
+      const subtotal = items
+        .filter(i => i.status !== 'voided' && i.status !== 'comped')
+        .reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(id);
+      const discountAmt = parseFloat(order?.discount_amount) || 0;
+      const afterDiscount = Math.max(0, subtotal - discountAmt);
+      const tax = afterDiscount * 0.13; // Ontario HST
       const tip = body.tip || 0;
-      const total = subtotal + tax + tip;
+      const total = afterDiscount + tax + tip;
 
-      db.prepare(`UPDATE orders SET status = 'closed', subtotal = ?, tax = ?, tip = ?, total = ?, payment_method = ?, closed_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?`)
-        .run(subtotal, tax, tip, total, body.payment_method || 'card', id);
+      db.prepare(`UPDATE orders SET status = 'closed', subtotal = ?, tax = ?, tip = ?, total = ?, payment_method = ?, gift_card_code = ?, gift_card_amount = ?, closed_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?`)
+        .run(afterDiscount, tax, tip, total, body.payment_method || 'card', body.gift_card_code || null, body.gift_card_amount || 0, id);
 
       // Free up table
-      const order = db.prepare('SELECT table_id FROM orders WHERE id = ?').get(id);
       if (order?.table_id) {
         db.prepare('UPDATE tables SET status = ?, current_order_id = NULL, seated_at = NULL WHERE id = ?')
           .run('cleaning', order.table_id);
@@ -54,6 +58,45 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ items });
     }
 
+    // Remove item
+    if (body.action === 'remove_item') {
+      db.prepare('DELETE FROM order_items WHERE id = ? AND order_id = ?').run(body.item_id, id);
+      db.prepare('UPDATE orders SET updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(id);
+      const items = db.prepare('SELECT * FROM order_items WHERE order_id = ? ORDER BY created_at ASC').all(id);
+      return NextResponse.json({ items });
+    }
+
+    // Update item quantity
+    if (body.action === 'update_quantity') {
+      db.prepare('UPDATE order_items SET quantity = ? WHERE id = ? AND order_id = ?').run(Math.max(1, body.quantity), body.item_id, id);
+      db.prepare('UPDATE orders SET updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(id);
+      const items = db.prepare('SELECT * FROM order_items WHERE order_id = ? ORDER BY created_at ASC').all(id);
+      return NextResponse.json({ items });
+    }
+
+    // Void item (keeps record, shows as voided)
+    if (body.action === 'void_item') {
+      db.prepare("UPDATE order_items SET status = 'voided' WHERE id = ? AND order_id = ?").run(body.item_id, id);
+      db.prepare('UPDATE orders SET updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(id);
+      const items = db.prepare('SELECT * FROM order_items WHERE order_id = ? ORDER BY created_at ASC').all(id);
+      return NextResponse.json({ items });
+    }
+
+    // Comp item (marked as comped, zero cost)
+    if (body.action === 'comp_item') {
+      db.prepare("UPDATE order_items SET status = 'comped' WHERE id = ? AND order_id = ?").run(body.item_id, id);
+      db.prepare('UPDATE orders SET updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(id);
+      const items = db.prepare('SELECT * FROM order_items WHERE order_id = ? ORDER BY created_at ASC').all(id);
+      return NextResponse.json({ items });
+    }
+
+    // Add notes to item
+    if (body.action === 'add_item_notes') {
+      db.prepare('UPDATE order_items SET notes = ? WHERE id = ? AND order_id = ?').run(body.notes || null, body.item_id, id);
+      const items = db.prepare('SELECT * FROM order_items WHERE order_id = ? ORDER BY created_at ASC').all(id);
+      return NextResponse.json({ items });
+    }
+
     // Fire course
     if (body.action === 'fire_course') {
       db.prepare("UPDATE order_items SET status = 'fired', fired_at = CURRENT_TIMESTAMP WHERE order_id = ? AND course = ? AND status = 'pending'")
@@ -61,8 +104,25 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ success: true });
     }
 
+    // Add discount to order
+    if (body.action === 'add_discount') {
+      const { discount_type, discount_value, discount_reason } = body;
+      let discountAmount = 0;
+      if (discount_type === 'percent') {
+        const items = db.prepare("SELECT price, quantity, status FROM order_items WHERE order_id = ?").all(id);
+        const subtotal = items.filter(i => i.status !== 'voided' && i.status !== 'comped').reduce((s, i) => s + i.price * i.quantity, 0);
+        discountAmount = subtotal * (discount_value / 100);
+      } else {
+        discountAmount = discount_value;
+      }
+      db.prepare('UPDATE orders SET discount_amount = ?, discount_reason = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+        .run(discountAmount, discount_reason || null, id);
+      const updated = db.prepare('SELECT * FROM orders WHERE id = ?').get(id);
+      return NextResponse.json(updated);
+    }
+
     // General updates
-    const allowedFields = ['status', 'notes', 'guest_name'];
+    const allowedFields = ['status', 'notes', 'guest_name', 'order_notes'];
     const setClause = [];
     const values = [];
     for (const field of allowedFields) {
@@ -80,3 +140,4 @@ export async function PATCH(request, { params }) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+

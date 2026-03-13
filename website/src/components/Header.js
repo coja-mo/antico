@@ -12,13 +12,10 @@ const LEFT_LINKS = [
   { href: '/gallery', label: 'Gallery' },
 ];
 
-const RIGHT_LINKS = [
-  { href: '/contact', label: 'Contact' },
-];
-
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [customerName, setCustomerName] = useState(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -32,6 +29,36 @@ export default function Header() {
     setMenuOpen(false);
   }, [pathname]);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
+  // Check customer auth
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/customer/me');
+        if (res.ok) {
+          const data = await res.json();
+          setCustomerName(data.first_name);
+        }
+      } catch {}
+    }
+    checkAuth();
+  }, [pathname]);
+
+  const RIGHT_LINKS = [
+    { href: '/gift-cards', label: 'Gift Cards' },
+    { href: '/contact', label: 'Contact' },
+    { href: '/account', label: customerName ? `Hi, ${customerName}` : 'Account' },
+  ];
+
   const renderLink = (link) => (
     <Link
       key={link.href}
@@ -41,6 +68,9 @@ export default function Header() {
       onClick={() => setMenuOpen(false)}
     >
       {link.label}
+      {link.href === '/account' && customerName && (
+        <span style={{ display: 'inline-block', width: 5, height: 5, borderRadius: '50%', background: '#d4a84b', marginLeft: 5, verticalAlign: 'middle' }} />
+      )}
     </Link>
   );
 
@@ -93,3 +123,4 @@ export default function Header() {
     </header>
   );
 }
+

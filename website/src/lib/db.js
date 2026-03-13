@@ -134,7 +134,64 @@ function initializeDatabase(db) {
       bumped_by INTEGER REFERENCES staff(id),
       bumped_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS customer_accounts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      first_name TEXT NOT NULL,
+      last_name TEXT NOT NULL,
+      phone TEXT,
+      guest_id INTEGER REFERENCES guests(id),
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS gift_cards (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      code TEXT UNIQUE NOT NULL,
+      initial_amount REAL NOT NULL,
+      balance REAL NOT NULL,
+      sender_name TEXT,
+      sender_email TEXT,
+      recipient_name TEXT,
+      recipient_email TEXT,
+      recipient_phone TEXT,
+      delivery_method TEXT DEFAULT 'email',
+      personal_message TEXT,
+      customer_account_id INTEGER REFERENCES customer_accounts(id),
+      status TEXT DEFAULT 'active',
+      purchased_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      last_used_at DATETIME,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS gift_card_transactions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      gift_card_id INTEGER NOT NULL REFERENCES gift_cards(id),
+      type TEXT NOT NULL,
+      amount REAL NOT NULL,
+      balance_after REAL NOT NULL,
+      order_id INTEGER REFERENCES orders(id),
+      description TEXT,
+      performed_by TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
+
+  // Add new columns to existing tables (safe for existing DBs)
+  const safeAddColumn = (table, column, type) => {
+    try { db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`); } catch {}
+  };
+  safeAddColumn('orders', 'guest_id', 'INTEGER REFERENCES guests(id)');
+  safeAddColumn('orders', 'reservation_id', 'INTEGER REFERENCES reservations(id)');
+  safeAddColumn('orders', 'discount_amount', 'REAL DEFAULT 0');
+  safeAddColumn('orders', 'discount_reason', 'TEXT');
+  safeAddColumn('orders', 'order_notes', 'TEXT');
+  safeAddColumn('tables', 'server_name', 'TEXT');
+  safeAddColumn('tables', 'reservation_id', 'INTEGER');
+  safeAddColumn('reservations', 'server_name', 'TEXT');
+  safeAddColumn('orders', 'gift_card_code', 'TEXT');
+  safeAddColumn('orders', 'gift_card_amount', 'REAL DEFAULT 0');
 
   // Seed default admin if none exists
   const adminExists = db.prepare('SELECT id FROM staff WHERE username = ?').get('admin');
@@ -205,10 +262,33 @@ function initializeDatabase(db) {
       { name: 'Fresh Pickerel', description: 'Pan seared pickerel, with sage, capers, olive oil, white wine, served with lobster ravioli', category: 'entree', price: 36, sort: 11 },
       // Desserts
       { name: "Art's Tiramisu", description: "Chef Arturo's signature tiramisu — a must-have", category: 'dessert', price: 14, sort: 1 },
+      // Beverages — Wine
+      { name: 'Chianti Classico', description: 'Tuscan red, full-bodied with cherry and oak', category: 'beverage', subcategory: 'wine', price: 14, sort: 1 },
+      { name: 'Pinot Grigio', description: 'Light and crisp Italian white', category: 'beverage', subcategory: 'wine', price: 12, sort: 2 },
+      { name: 'Barolo', description: 'Premium Piedmont red, aged 24 months', category: 'beverage', subcategory: 'wine', price: 22, sort: 3 },
+      { name: 'Prosecco', description: 'Sparkling Italian white, dry and refreshing', category: 'beverage', subcategory: 'wine', price: 13, sort: 4 },
+      { name: 'Montepulciano d\'Abruzzo', description: 'Smooth medium-bodied red from Abruzzo', category: 'beverage', subcategory: 'wine', price: 13, sort: 5 },
+      { name: 'Amarone della Valpolicella', description: 'Rich, complex red from dried grapes', category: 'beverage', subcategory: 'wine', price: 26, sort: 6 },
+      // Beverages — Cocktails
+      { name: 'Negroni', description: 'Gin, Campari, sweet vermouth', category: 'beverage', subcategory: 'cocktail', price: 16, sort: 7 },
+      { name: 'Aperol Spritz', description: 'Aperol, prosecco, soda water', category: 'beverage', subcategory: 'cocktail', price: 14, sort: 8 },
+      { name: 'Espresso Martini', description: 'Vodka, espresso, Kahlúa', category: 'beverage', subcategory: 'cocktail', price: 16, sort: 9 },
+      { name: 'Limoncello Spritz', description: 'Limoncello, prosecco, fresh mint', category: 'beverage', subcategory: 'cocktail', price: 14, sort: 10 },
+      { name: 'Old Fashioned', description: 'Bourbon, bitters, orange peel', category: 'beverage', subcategory: 'cocktail', price: 15, sort: 11 },
+      // Beverages — Beer
+      { name: 'Peroni Nastro Azzurro', description: 'Premium Italian lager', category: 'beverage', subcategory: 'beer', price: 8, sort: 12 },
+      { name: 'Moretti La Rossa', description: 'Double malt Italian red ale', category: 'beverage', subcategory: 'beer', price: 9, sort: 13 },
+      { name: 'Guinness Draught', description: 'Classic Irish stout', category: 'beverage', subcategory: 'beer', price: 8, sort: 14 },
+      { name: 'Local Craft IPA', description: 'Rotating selection from local breweries', category: 'beverage', subcategory: 'beer', price: 10, sort: 15 },
+      // Beverages — Non-Alcoholic
+      { name: 'San Pellegrino', description: 'Sparkling mineral water', category: 'beverage', subcategory: 'non-alcoholic', price: 5, sort: 16 },
+      { name: 'Italian Limonata', description: 'Sparkling lemon soda', category: 'beverage', subcategory: 'non-alcoholic', price: 5, sort: 17 },
+      { name: 'Espresso', description: 'Double shot Italian espresso', category: 'beverage', subcategory: 'non-alcoholic', price: 4, sort: 18 },
+      { name: 'Cappuccino', description: 'Espresso with steamed milk foam', category: 'beverage', subcategory: 'non-alcoholic', price: 6, sort: 19 },
     ];
-    const stmt = db.prepare('INSERT INTO menu_items (name, description, category, price, sort_order) VALUES (?, ?, ?, ?, ?)');
+    const stmt = db.prepare('INSERT INTO menu_items (name, description, category, subcategory, price, sort_order) VALUES (?, ?, ?, ?, ?, ?)');
     for (const item of items) {
-      stmt.run(item.name, item.description, item.category, item.price, item.sort);
+      stmt.run(item.name, item.description, item.category, item.subcategory || null, item.price, item.sort);
     }
   }
 }

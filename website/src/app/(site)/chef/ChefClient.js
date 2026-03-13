@@ -73,7 +73,7 @@ export default function ChefPageClient() {
               { year: '~1990s', title: "Rico's Restaurant", desc: 'Acquired Rico\'s on Spring Street in Sault Ste. Marie' },
               { year: '~2000s', title: 'Arturo Ristoranté', desc: 'Opened the acclaimed Arturo Ristoranté on Queen Street' },
               { year: '2012', title: 'Antico Ristoranté', desc: 'Opened Antico — a fusion of culinary mastery and art' },
-              { year: 'Today', title: 'The Legacy Continues', desc: 'Sons Chris & Thomas carry on the family tradition' },
+              { year: 'Today', title: 'The Legacy Continues at Antico', desc: 'While sons Chris & Thomas carry on the family tradition at Arturo\'s Ristoranté' },
             ].map((item, i) => (
               <div key={i} className={styles.timelineItem} data-reveal style={{ animationDelay: `${i * 0.1}s` }}>
                 <div className={styles.timelineDot} />

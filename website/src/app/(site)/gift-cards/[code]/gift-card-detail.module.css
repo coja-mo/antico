@@ -1,0 +1,404 @@
+/* ═══════════════════════════════════════════════
+   GIFT CARD DETAIL PAGE
+   ═══════════════════════════════════════════════ */
+
+.detailPage {
+  min-height: 100vh;
+  padding-top: var(--header-height);
+  padding-bottom: var(--space-4xl);
+}
+
+.detailInner {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: var(--space-3xl) var(--space-xl);
+}
+
+.loadingState {
+  text-align: center;
+  padding: var(--space-4xl);
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.errorState {
+  text-align: center;
+  padding: var(--space-4xl);
+}
+
+.errorTitle {
+  color: var(--danger);
+  font-size: 1.5rem;
+  margin-bottom: var(--space-sm);
+}
+
+.errorSub {
+  color: var(--text-muted);
+}
+
+/* ── Card Visual ── */
+.cardVisual {
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 1.6 / 1;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, #1a1510 0%, #0d0d0d 40%, #1a1510 100%);
+  border: 1px solid var(--border-strong);
+  padding: var(--space-xl) var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(212, 168, 75, 0.08);
+  margin: 0 auto var(--space-xl);
+  animation: fadeInUp 0.6s var(--ease-out) both;
+}
+
+.cardVisual::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(212, 168, 75, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cardVisualLogo {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+}
+
+.cardVisualLabel {
+  font-family: var(--font-script);
+  color: var(--neon-pink);
+  font-size: 1.1rem;
+  margin-top: 2px;
+}
+
+.cardVisualAmount {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+}
+
+.cardVisualBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.cardVisualRecipient {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cardVisualName {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.cardVisualCode {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+}
+
+/* ── Status Badge ── */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.statusActive {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.statusDepleted {
+  background: rgba(148, 163, 184, 0.1);
+  color: #94a3b8;
+}
+
+.statusInactive {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+/* ── Info Grid ── */
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  animation: fadeInUp 0.6s var(--ease-out) 0.1s both;
+}
+
+.infoCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  text-align: center;
+}
+
+.infoValue {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--gold);
+  font-family: var(--font-heading);
+}
+
+.infoLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+}
+
+/* ── QR Code Section ── */
+.qrSection {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  text-align: center;
+  margin-bottom: var(--space-xl);
+  animation: fadeInUp 0.6s var(--ease-out) 0.2s both;
+}
+
+.qrTitle {
+  font-size: 1.1rem;
+  margin-bottom: var(--space-md);
+}
+
+.qrCode {
+  display: inline-block;
+  padding: var(--space-md);
+  background: white;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-md);
+}
+
+.qrCode img,
+.qrCode canvas {
+  display: block;
+}
+
+.qrHint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ── Wallet Actions ── */
+.walletSection {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  animation: fadeInUp 0.6s var(--ease-out) 0.3s both;
+}
+
+.walletBtn {
+  flex: 1;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--text-primary);
+}
+
+.walletBtn:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-elevated);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.walletBtnIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.walletBtnApple {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.walletBtnGoogle {
+  background: rgba(66, 133, 244, 0.15);
+}
+
+.walletBtnLabel {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.walletBtnSub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ── Add to Account ── */
+.addToAccount {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  text-align: center;
+  animation: fadeInUp 0.6s var(--ease-out) 0.35s both;
+}
+
+.addToAccountBtn {
+  padding: 12px 28px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: #0a0a0a;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.addToAccountBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px var(--gold-glow);
+}
+
+.addToAccountLabel {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.addedMsg {
+  color: var(--success);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* ── Transactions ── */
+.txSection {
+  animation: fadeInUp 0.6s var(--ease-out) 0.4s both;
+}
+
+.txTitle {
+  font-size: 1.1rem;
+  margin-bottom: var(--space-md);
+}
+
+.txList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.txItem {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.txInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.txType {
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+}
+
+.txDesc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.txRight {
+  text-align: right;
+}
+
+.txAmount {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.txAmountPositive {
+  color: var(--success);
+}
+
+.txAmountNegative {
+  color: var(--danger);
+}
+
+.txBalance {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.txDate {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.txEmpty {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .walletSection {
+    flex-direction: column;
+  }
+
+  .cardVisual {
+    max-width: 360px;
+  }
+}

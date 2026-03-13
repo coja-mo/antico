@@ -75,7 +75,7 @@
 .posHeaderRight {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
 }
 
 .posTime {
@@ -96,8 +96,56 @@
 
 .posAdminLink:hover { border-color: rgba(255 255 255 / 0.12); color: rgba(255 255 255 / 0.5); }
 
-/* ── Floor View ── */
-.floorView {
+/* Reservation Toggle Button */
+.resoToggleBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 5px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: rgba(59, 130, 246, 0.8);
+  background: rgba(59, 130, 246, 0.04);
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.resoToggleBtn:hover { background: rgba(59, 130, 246, 0.08); border-color: rgba(59, 130, 246, 0.3); }
+.resoToggleBtnActive { background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.35); color: #60a5fa; }
+
+.resoBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: #3b82f6;
+  color: white;
+  font-size: 0.62rem;
+  font-weight: 700;
+  border-radius: 8px;
+}
+
+/* ── POS Body ── */
+.posBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Floor Layout (with sidebar) ── */
+.floorLayout {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.floorMain {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
@@ -156,17 +204,18 @@
 
 .zoneGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 8px;
 }
 
+/* ── Table Cards ── */
 .tableCard {
   background: rgba(255 255 255 / 0.02);
   border: 1px solid rgba(255 255 255 / 0.06);
   border-radius: 8px;
-  padding: 16px;
+  padding: 14px;
   cursor: pointer;
-  transition: all 0.12s;
+  transition: all 0.15s;
   text-align: left;
   position: relative;
 }
@@ -174,18 +223,50 @@
 .tableCard:hover {
   border-color: var(--table-color, rgba(255 255 255 / 0.12));
   background: rgba(255 255 255 / 0.03);
+  transform: translateY(-1px);
+}
+
+/* Reservation table card — blue glow */
+.tableCardReso {
+  border-color: rgba(59, 130, 246, 0.25);
+  background: rgba(59, 130, 246, 0.03);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.06), inset 0 0 8px rgba(59, 130, 246, 0.02);
+}
+
+.tableCardReso:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.06);
+}
+
+/* Seat target highlight */
+.tableCardSeatTarget {
+  border-color: rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.04);
+  animation: seatPulse 1.5s ease-in-out infinite;
+}
+
+.tableCardSeatTarget:hover {
+  border-color: rgba(34, 197, 94, 0.6);
+  background: rgba(34, 197, 94, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.12);
+}
+
+@keyframes seatPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.15); }
+  50% { box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.08); }
 }
 
 .tableTop {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .tableNum {
   font-family: var(--font-heading);
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1;
@@ -202,6 +283,56 @@
 .tableCapacity {
   font-size: 0.72rem;
   color: rgba(255 255 255 / 0.3);
+}
+
+/* Personalized guest name on table card */
+.tableGuestName {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #60a5fa;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Server badge on table card */
+.tableServerBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.62rem;
+  color: rgba(255 255 255 / 0.35);
+  background: rgba(255 255 255 / 0.04);
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-bottom: 4px;
+}
+
+/* Server assign button (corner icon) */
+.serverAssignBtn {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: rgba(255 255 255 / 0.15);
+  cursor: pointer;
+  transition: all 0.12s;
+  opacity: 0;
+}
+
+.tableCard:hover .serverAssignBtn {
+  opacity: 1;
+}
+
+.serverAssignBtn:hover {
+  background: rgba(255 255 255 / 0.06);
+  color: rgba(255 255 255 / 0.4);
 }
 
 .tableStatusText {
@@ -226,7 +357,247 @@
 
 .quickClear:hover { background: rgba(34, 197, 94, 0.12); }
 
-/* ── Order View ── */
+/* ══════════════════════════════════════════════
+   RESERVATIONS SIDEBAR
+   ══════════════════════════════════════════════ */
+.resoSidebar {
+  width: 320px;
+  min-width: 320px;
+  background: #0a0a0a;
+  border-left: 1px solid rgba(255 255 255 / 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.resoSidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255 255 255 / 0.06);
+}
+
+.resoSidebarHeader h3 {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.resoCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  font-size: 0.68rem;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+/* Seat Banner — shown when selecting table for reso */
+.seatBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: rgba(34, 197, 94, 0.06);
+  border-bottom: 1px solid rgba(34, 197, 94, 0.12);
+  animation: seatBannerIn 0.25s ease;
+}
+
+@keyframes seatBannerIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.seatBannerText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.seatBannerText strong {
+  font-size: 0.78rem;
+  color: #4ade80;
+}
+
+.seatBannerText span {
+  font-size: 0.68rem;
+  color: rgba(34, 197, 94, 0.6);
+}
+
+.seatBannerCancel {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: rgba(255 255 255 / 0.3);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.seatBannerCancel:hover {
+  background: rgba(255 255 255 / 0.06);
+  color: rgba(255 255 255 / 0.6);
+}
+
+/* Reservation List */
+.resoList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.resoEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 40px 20px;
+  color: rgba(255 255 255 / 0.15);
+  font-size: 0.82rem;
+}
+
+/* Reservation Card */
+.resoCard {
+  background: rgba(255 255 255 / 0.02);
+  border: 1px solid rgba(255 255 255 / 0.06);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 8px;
+  transition: all 0.12s;
+}
+
+.resoCard:hover {
+  border-color: rgba(255 255 255 / 0.1);
+}
+
+.resoCardSeated {
+  border-color: rgba(34, 197, 94, 0.2);
+  background: rgba(34, 197, 94, 0.02);
+}
+
+.resoCardPending {
+  border-color: rgba(251, 191, 36, 0.15);
+  background: rgba(251, 191, 36, 0.02);
+}
+
+.resoCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.resoGuestInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.resoGuestName {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.resoDetails {
+  display: flex;
+  gap: 12px;
+}
+
+.resoDetails span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: rgba(255 255 255 / 0.35);
+}
+
+/* Reservation Status Badges */
+.resoStatus {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.resoStatusConfirmed {
+  background: rgba(34, 197, 94, 0.08);
+  color: #4ade80;
+}
+
+.resoStatusPending {
+  background: rgba(251, 191, 36, 0.08);
+  color: #fbbf24;
+}
+
+.resoStatusSeated {
+  background: rgba(59, 130, 246, 0.08);
+  color: #60a5fa;
+}
+
+.resoOccasion {
+  font-size: 0.68rem;
+  color: rgba(212, 168, 75, 0.7);
+  margin-bottom: 6px;
+}
+
+.resoNotes {
+  font-size: 0.68rem;
+  color: rgba(255 255 255 / 0.25);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+/* Seat Button */
+.seatBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #60a5fa;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.seatBtn:hover {
+  background: rgba(59, 130, 246, 0.14);
+  border-color: rgba(59, 130, 246, 0.35);
+  transform: translateY(-1px);
+}
+
+.seatedInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: #4ade80;
+  padding: 6px 0 0;
+}
+
+/* ══════════════════════════════════════════════
+   ORDER VIEW
+   ══════════════════════════════════════════════ */
 .orderView {
   flex: 1;
   display: grid;
@@ -302,7 +673,7 @@
   font-size: 0.82rem;
 }
 
-/* Check Panel */
+/* ── Check Panel ── */
 .checkPanel {
   display: flex;
   flex-direction: column;
@@ -331,11 +702,36 @@
   margin-top: 2px;
 }
 
+.checkServer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  color: rgba(255 255 255 / 0.35);
+  margin-top: 4px;
+}
+
 .checkStatus {
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-weight: 600;
+}
+
+/* Guest Banner (for reservation orders) */
+.guestBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: rgba(59, 130, 246, 0.04);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+  font-size: 0.78rem;
+  color: rgba(59, 130, 246, 0.7);
+}
+
+.guestBanner strong {
+  color: #60a5fa;
 }
 
 .checkEmpty {
@@ -591,6 +987,17 @@
   font-weight: 500;
 }
 
+.payMethodBtnGc {
+  border-color: rgba(212, 168, 75, 0.15);
+  background: rgba(212, 168, 75, 0.03);
+}
+
+.payMethodBtnGc:hover {
+  border-color: var(--gold);
+  background: rgba(212, 168, 75, 0.08);
+  box-shadow: 0 0 12px rgba(212, 168, 75, 0.1);
+}
+
 .cancelPayBtn {
   width: 100%;
   margin-top: 10px;
@@ -616,3 +1023,311 @@
 }
 
 .backToFloor:hover { color: rgba(255 255 255 / 0.4); }
+
+/* ══════════════════════════════════════════════
+   SERVER ASSIGNMENT MODAL
+   ══════════════════════════════════════════════ */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0 0 0 / 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: modalFadeIn 0.15s ease;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.serverModal {
+  background: #141414;
+  border: 1px solid rgba(255 255 255 / 0.08);
+  border-radius: 12px;
+  padding: 24px;
+  width: 340px;
+  animation: modalScaleIn 0.2s ease;
+}
+
+@keyframes modalScaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.serverModal h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+
+.serverModalSub {
+  font-size: 0.75rem;
+  color: rgba(255 255 255 / 0.3);
+  margin: 0 0 16px;
+}
+
+.serverModalInput {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(255 255 255 / 0.04);
+  border: 1px solid rgba(255 255 255 / 0.08);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+.serverModalInput:focus {
+  border-color: rgba(212, 168, 75, 0.3);
+  outline: none;
+}
+
+.serverModalActions {
+  display: flex;
+  gap: 8px;
+}
+
+.serverModalClear {
+  flex: 1;
+  padding: 9px;
+  border: 1px solid rgba(255 255 255 / 0.06);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  color: rgba(255 255 255 / 0.35);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.serverModalClear:hover {
+  border-color: rgba(255 255 255 / 0.12);
+  color: rgba(255 255 255 / 0.5);
+}
+
+.serverModalSave {
+  flex: 1;
+  padding: 9px;
+  background: var(--gold);
+  border: none;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #0a0a0a;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.serverModalSave:hover {
+  background: var(--gold-light);
+}
+
+/* ══════════════════════════════════════════════
+   ITEM CONTROLS
+   ══════════════════════════════════════════════ */
+
+/* Qty controls */
+.qtyControls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-right: 8px;
+}
+
+.qtyBtn {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid rgba(255 255 255 / 0.08);
+  background: rgba(255 255 255 / 0.04);
+  color: rgba(255 255 255 / 0.5);
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s;
+}
+
+.qtyBtn:hover {
+  background: rgba(255 255 255 / 0.08);
+  color: var(--text-primary);
+}
+
+.qtyValue {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Check item layout */
+.checkItemMain {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.checkItemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.checkItemRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkItemMod {
+  font-size: 0.68rem;
+  color: #fbbf24;
+  font-style: italic;
+}
+
+.checkItemVoided {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.checkItemPriceStruck {
+  text-decoration: line-through;
+  opacity: 0.3;
+}
+
+.checkItemInactive {
+  opacity: 0.5;
+  border-left: 2px solid rgba(248, 113, 113, 0.3);
+  padding-left: 8px;
+}
+
+/* Item action bar */
+.checkItemActions {
+  display: flex;
+  gap: 4px;
+  padding-top: 6px;
+  margin-top: 6px;
+  border-top: 1px dashed rgba(255 255 255 / 0.04);
+}
+
+.itemActionBtn {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255 255 255 / 0.05);
+  background: rgba(255 255 255 / 0.02);
+  color: rgba(255 255 255 / 0.3);
+  font-size: 0.65rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.itemActionBtn:hover {
+  background: rgba(255 255 255 / 0.06);
+  color: rgba(255 255 255 / 0.6);
+}
+
+.itemActionBtnDanger:hover {
+  background: rgba(248, 113, 113, 0.08);
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.15);
+}
+
+/* Voided / Comped status */
+.itemStatusVoided {
+  background: rgba(248, 113, 113, 0.1) !important;
+  color: #f87171 !important;
+}
+
+.itemStatusComped {
+  background: rgba(96, 165, 250, 0.1) !important;
+  color: #60a5fa !important;
+}
+
+/* Discount banner */
+.discountBanner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(212, 168, 75, 0.06);
+  border: 1px solid rgba(212, 168, 75, 0.12);
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 0.75rem;
+  color: var(--gold);
+  font-weight: 500;
+}
+
+/* Order tools bar */
+.orderTools {
+  display: flex;
+  gap: 6px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(255 255 255 / 0.04);
+}
+
+.orderToolBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: 1px solid rgba(255 255 255 / 0.06);
+  background: rgba(255 255 255 / 0.02);
+  color: rgba(255 255 255 / 0.4);
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.orderToolBtn:hover {
+  background: rgba(255 255 255 / 0.06);
+  color: rgba(255 255 255 / 0.6);
+  border-color: rgba(255 255 255 / 0.1);
+}
+
+/* Table timer */
+.tableStatusRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2px;
+}
+
+.tableTimer {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.62rem;
+  color: #fbbf24;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.checkTimer {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #fbbf24;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+/* Discount in totals */
+.totalLineDiscount {
+  color: var(--gold) !important;
+}
+
+.totalLineDiscount span:last-child {
+  color: var(--gold);
+}

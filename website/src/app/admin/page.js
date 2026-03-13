@@ -1,11 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { IconCalendar, IconUsers, IconClock, IconTrendingUp, IconAlertCircle, IconChevronRight } from '@/components/Icons';
+import { IconCalendar, IconUsers, IconClock, IconTrendingUp, IconAlertCircle, IconChevronRight, IconDollarSign, IconExternalLink, IconPlus } from '@/components/Icons';
 import styles from './admin.module.css';
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState({ today: [], pending: [], upcoming: [], totalGuests: 0 });
+  const [stats, setStats] = useState({ today: [], pending: [], upcoming: [], totalGuests: 0, todayRevenue: 0, openOrders: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => { loadData(); }, []);
@@ -13,14 +13,25 @@ export default function AdminDashboard() {
   async function loadData() {
     try {
       const today = new Date().toISOString().split('T')[0];
-      const [allRes, guestsRes] = await Promise.all([
+      const [allRes, guestsRes, ordersRes] = await Promise.all([
         fetch('/api/reservations').then(r => r.json()),
         fetch('/api/guests').then(r => r.json()),
+        fetch('/api/orders').then(r => r.json()),
       ]);
       const todayResos = allRes.filter(r => r.date === today);
       const pending = allRes.filter(r => r.status === 'pending');
       const upcoming = allRes.filter(r => r.date >= today && r.status === 'confirmed');
-      setStats({ today: todayResos, pending, upcoming: upcoming.slice(0, 10), totalGuests: guestsRes.length, allResos: allRes });
+
+      // Today's revenue from closed orders
+      const todayClosed = ordersRes.filter(o => o.status === 'closed' && (o.closed_at || '').startsWith(today));
+      const todayRevenue = todayClosed.reduce((s, o) => s + (o.total || 0), 0);
+      const openOrders = ordersRes.filter(o => o.status === 'open').length;
+
+      setStats({
+        today: todayResos, pending, upcoming: upcoming.slice(0, 10),
+        totalGuests: guestsRes.length, allResos: allRes,
+        todayRevenue, openOrders, todayClosedCount: todayClosed.length,
+      });
     } catch (e) { console.error(e); }
     setLoading(false);
   }
@@ -33,6 +44,22 @@ export default function AdminDashboard() {
       <div className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>Dashboard</h1>
         <p className={styles.pageSubtitle}>Service overview and pending actions</p>
+      </div>
+
+      {/* Quick Actions */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+        <Link href="/pos" target="_blank" className={`${styles.actionBtn} ${styles.actionBtnGold}`} style={{ textDecoration: 'none' }}>
+          <IconExternalLink size={13} /> Open POS
+        </Link>
+        <Link href="/admin/reservations" className={`${styles.actionBtn} ${styles.actionBtnDefault}`} style={{ textDecoration: 'none' }}>
+          <IconCalendar size={13} /> Reservations
+        </Link>
+        <Link href="/admin/orders" className={`${styles.actionBtn} ${styles.actionBtnDefault}`} style={{ textDecoration: 'none' }}>
+          <IconDollarSign size={13} /> Orders
+        </Link>
+        <Link href="/admin/reports" className={`${styles.actionBtn} ${styles.actionBtnDefault}`} style={{ textDecoration: 'none' }}>
+          <IconTrendingUp size={13} /> Reports
+        </Link>
       </div>
 
       <div className={styles.statsGrid}>
@@ -56,11 +83,11 @@ export default function AdminDashboard() {
 
         <div className={styles.statCard}>
           <div className={styles.statHeader}>
-            <span className={styles.statLabel}>Upcoming</span>
-            <span className={styles.statIcon}><IconTrendingUp size={15} /></span>
+            <span className={styles.statLabel}>Today&apos;s Revenue</span>
+            <span className={styles.statIcon}><IconDollarSign size={15} /></span>
           </div>
-          <div className={styles.statValue}>{stats.upcoming.length}</div>
-          <div className={styles.statSub}>Confirmed, next 7 days</div>
+          <div className={styles.statValue}>${stats.todayRevenue?.toFixed(2) || '0.00'}</div>
+          <div className={styles.statSub}>{stats.todayClosedCount || 0} closed, {stats.openOrders || 0} open</div>
         </div>
 
         <div className={styles.statCard}>

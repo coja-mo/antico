@@ -156,8 +156,29 @@ export default function ReservePageClient() {
   const [confirmationId, setConfirmationId] = useState(null);
   const [errors, setErrors] = useState({});
   const [dayWarning, setDayWarning] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const today = new Date().toISOString().split('T')[0];
+
+  // Auto-fill from customer account
+  useEffect(() => {
+    async function checkCustomer() {
+      try {
+        const res = await fetch('/api/customer/me');
+        if (res.ok) {
+          const data = await res.json();
+          setForm(prev => ({
+            ...prev,
+            name: `${data.first_name} ${data.last_name}`,
+            email: data.email,
+            phone: data.phone || prev.phone,
+          }));
+          setIsLoggedIn(true);
+        }
+      } catch {}
+    }
+    checkCustomer();
+  }, []);
 
   // ── Date change: check if it's an open day ──
   const handleDateChange = useCallback((val) => {

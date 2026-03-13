@@ -24,7 +24,7 @@ export async function PATCH(request, { params }) {
     const updates = [];
     const values = [];
 
-    const allowedFields = ['status', 'date', 'time', 'party_size', 'table_id', 'notes'];
+    const allowedFields = ['status', 'date', 'time', 'party_size', 'table_id', 'notes', 'server_name'];
     for (const field of allowedFields) {
       if (body[field] !== undefined) {
         updates.push(`${field} = ?`);
@@ -49,6 +49,7 @@ export async function PATCH(request, { params }) {
         cancelled: 'Reservation has been cancelled.',
         completed: 'Reservation marked as completed.',
         waitlisted: 'You have been added to the waitlist.',
+        seated: 'Your table is ready! You have been seated.',
       };
       if (statusMessages[body.status]) {
         db.prepare('INSERT INTO messages (reservation_id, sender, content) VALUES (?, ?, ?)').run(id, 'system', statusMessages[body.status]);

@@ -20,7 +20,14 @@ export async function GET(request) {
     query += ' ORDER BY o.created_at DESC';
 
     const orders = db.prepare(query).all(...params);
-    return NextResponse.json(orders);
+
+    // Enrich with items
+    const enriched = orders.map(o => {
+      const items = db.prepare('SELECT * FROM order_items WHERE order_id = ? ORDER BY created_at ASC').all(o.id);
+      return { ...o, items, item_count: items.length };
+    });
+
+    return NextResponse.json(enriched);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -31,12 +38,12 @@ export async function POST(request) {
   try {
     const db = getDb();
     const body = await request.json();
-    const { table_id, server_id, guest_name, notes } = body;
+    const { table_id, server_id, guest_name, notes, guest_id, reservation_id } = body;
 
     const result = db.prepare(`
-      INSERT INTO orders (table_id, server_id, guest_name, notes)
-      VALUES (?, ?, ?, ?)
-    `).run(table_id || null, server_id || null, guest_name || null, notes || null);
+      INSERT INTO orders (table_id, server_id, guest_name, notes, guest_id, reservation_id)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(table_id || null, server_id || null, guest_name || null, notes || null, guest_id || null, reservation_id || null);
 
     // Update table status if assigned
     if (table_id) {

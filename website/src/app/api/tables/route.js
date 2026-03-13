@@ -21,7 +21,7 @@ export async function PATCH(request) {
 
     if (!id) return NextResponse.json({ error: 'Table ID required' }, { status: 400 });
 
-    const allowedFields = ['status', 'x', 'y', 'current_order_id', 'seated_at', 'zone', 'name'];
+    const allowedFields = ['status', 'x', 'y', 'current_order_id', 'seated_at', 'zone', 'name', 'server_name', 'reservation_id'];
     const setClause = [];
     const values = [];
 
