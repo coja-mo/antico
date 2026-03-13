@@ -59,11 +59,27 @@ export default function Header() {
     { href: '/account', label: customerName ? `Hi, ${customerName}` : 'Account' },
   ];
 
-  const renderLink = (link) => (
+  const ALL_LINKS = [...LEFT_LINKS, ...RIGHT_LINKS];
+
+  const renderDesktopLink = (link) => (
     <Link
       key={link.href}
       href={link.href}
       className={`${styles.navLink} ${pathname === link.href ? styles.navLinkActive : ''}`}
+      aria-current={pathname === link.href ? 'page' : undefined}
+    >
+      {link.label}
+      {link.href === '/account' && customerName && (
+        <span style={{ display: 'inline-block', width: 5, height: 5, borderRadius: '50%', background: '#d4a84b', marginLeft: 5, verticalAlign: 'middle' }} />
+      )}
+    </Link>
+  );
+
+  const renderMobileLink = (link, index) => (
+    <Link
+      key={link.href}
+      href={link.href}
+      className={`${styles.mobileLink} ${pathname === link.href ? styles.mobileLinkActive : ''}`}
       aria-current={pathname === link.href ? 'page' : undefined}
       onClick={() => setMenuOpen(false)}
     >
@@ -91,24 +107,57 @@ export default function Header() {
           </Link>
 
           <nav className={styles.leftNav} aria-label="Main navigation">
-            {LEFT_LINKS.map(renderLink)}
+            {LEFT_LINKS.map(renderDesktopLink)}
           </nav>
         </div>
 
-        {/* Right group: Contact, Reserve */}
-        <nav className={`${styles.rightNav} ${menuOpen ? styles.navOpen : ''}`} aria-label="Site navigation">
-          {LEFT_LINKS.map(renderLink)}
-          {RIGHT_LINKS.map(renderLink)}
+        {/* Right group — desktop */}
+        <nav className={styles.rightNav} aria-label="Site navigation">
+          {RIGHT_LINKS.map(renderDesktopLink)}
           <Link
             href="/reserve"
             className={`btn btn-gold ${styles.reserveBtn} ${pathname === '/reserve' ? styles.reserveBtnActive : ''}`}
             aria-current={pathname === '/reserve' ? 'page' : undefined}
-            onClick={() => setMenuOpen(false)}
           >
             Reserve a Table
           </Link>
         </nav>
 
+        {/* Mobile overlay */}
+        <div
+          className={`${styles.mobileOverlay} ${menuOpen ? styles.navOpen : ''}`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation menu"
+        >
+          {/* Close button */}
+          <button
+            className={styles.closeBtn}
+            onClick={() => setMenuOpen(false)}
+            aria-label="Close menu"
+          >
+            <span />
+            <span />
+          </button>
+
+          {/* All nav links */}
+          {ALL_LINKS.slice(0, 4).map(renderMobileLink)}
+
+          <div className={styles.mobileDivider} />
+
+          {ALL_LINKS.slice(4).map(renderMobileLink)}
+
+          <Link
+            href="/reserve"
+            className={`btn btn-gold ${styles.mobileReserveBtn}`}
+            aria-current={pathname === '/reserve' ? 'page' : undefined}
+            onClick={() => setMenuOpen(false)}
+          >
+            Reserve a Table
+          </Link>
+        </div>
+
+        {/* Hamburger toggle */}
         <button
           className={`${styles.hamburger} ${menuOpen ? styles.hamburgerOpen : ''}`}
           onClick={() => setMenuOpen(!menuOpen)}
@@ -123,4 +172,3 @@ export default function Header() {
     </header>
   );
 }
-
