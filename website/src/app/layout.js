@@ -44,9 +44,41 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Restaurant',
+    name: 'Antico Ristoranté',
+    image: 'https://anticorestaurant.ca/images/antico-logo-transparent.png',
+    url: 'https://anticorestaurant.ca',
+    telephone: '+17052550161',
+    email: 'Acomegna@Hotmail.com',
+    servesCuisine: 'Italian',
+    priceRange: '$$$',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '6 Village Court',
+      addressLocality: 'Sault Ste. Marie',
+      addressRegion: 'ON',
+      addressCountry: 'CA',
+    },
+    openingHoursSpecification: [
+      { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Wednesday', 'Thursday', 'Friday', 'Saturday'], opens: '17:00', closes: '22:00' },
+    ],
+    founder: {
+      '@type': 'Person',
+      name: 'Arturo Comegna',
+      jobTitle: 'Owner and Head Chef',
+    },
+    description: 'Fine Italian dining featuring handcrafted pasta, fresh seafood, and signature dishes by Chef Arturo Comegna in Sault Ste. Marie, Ontario.',
+  };
+
   return (
     <html lang="en">
       <body className={`${playfair.variable} ${inter.variable} ${greatVibes.variable}`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         {children}
       </body>
     </html>
