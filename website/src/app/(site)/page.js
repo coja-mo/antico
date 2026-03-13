@@ -82,7 +82,7 @@ export default function Home() {
                 { name: 'Lobster Ravioli', desc: 'Delicate pasta parcels filled with fresh lobster, served in a velvety blush sauce' },
                 { name: 'Veal Saltimbocca', desc: 'Pan seared veal with sage, capers, prosciutto, and provolone in a white wine reduction' },
                 { name: 'Filet Mignon', desc: 'Centre cut 8oz filet topped with gorgonzola butter and a rich demi-glaze' },
-                { name: 'Blackened Sea Scallops', desc: 'Spicy seasoned scallops served with homemade apple mango salsa' },
+                { name: 'Chicken or Veal Parmigiana', desc: 'Lightly breaded and pan-fried, topped with San Marzano tomato sauce and melted mozzarella' },
               ].map((dish, i) => (
                 <div key={i} className={styles.dishCard} data-reveal data-reveal-delay={`${i * 0.1}s`}>
                   <h3 className={styles.dishName}>{dish.name}</h3>
