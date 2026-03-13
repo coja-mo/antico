@@ -1,0 +1,79 @@
+{/* ═══════════════════════════════════════════════════════════
+   HERO BACKUP — Original logo-based hero (saved for rollback)
+   Date: 2026-03-13
+   ═══════════════════════════════════════════════════════════
+
+   Replace the current hero section in page.js with this to restore:
+
+      <section className={styles.hero}>
+        <div className={styles.heroOverlay} />
+        <FloatingMotifs />
+        <div className={styles.heroContent}>
+          <p className={styles.heroGreeting}>Ciao, benvenuti</p>
+          <div className={styles.heroLogo}>
+            <Image
+              src="/images/antico-logo-transparent.png"
+              alt="Antico"
+              width={1295}
+              height={816}
+              quality={100}
+              className={styles.heroLogoImg}
+              priority
+            />
+          </div>
+          <p className={styles.heroAmore}>Amore</p>
+          <div className={styles.heroDivider} />
+          <p className={styles.heroTagline}>Life's Too Short For Average Food</p>
+          <p className={styles.heroSub}>Fine Italian Dining · Sault Ste. Marie</p>
+          <div className={styles.heroCtas}>
+            <Link href="/reserve" className="btn btn-gold">Reserve Your Experience</Link>
+            <Link href="/menu" className="btn btn-outline">View the Menu</Link>
+          </div>
+        </div>
+        <div className={styles.heroScroll}>
+          <span>Scroll to discover</span>
+          <div className={styles.scrollLine} />
+        </div>
+      </section>
+
+   Also restore these CSS classes in page.module.css:
+
+      .heroLogo {
+        margin: 0 auto var(--space-md);
+        animation: fadeInUp 0.8s ease both 0.4s;
+        position: relative;
+      }
+
+      .heroLogo::after {
+        content: '';
+        position: absolute;
+        inset: -30%;
+        background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.12) 0%, transparent 60%);
+        z-index: 0;
+        pointer-events: none;
+        animation: heroGlowPulse 4s ease-in-out infinite;
+      }
+
+      @keyframes heroGlowPulse {
+        0%, 100% { opacity: 0.7; }
+        50% { opacity: 1; }
+      }
+
+      .heroLogoImg {
+        width: min(550px, 85vw);
+        height: auto;
+        object-fit: contain;
+        image-rendering: auto;
+        position: relative;
+        z-index: 1;
+      }
+
+      .heroAmore {
+        font-family: var(--font-script);
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        color: var(--neon-pink);
+        letter-spacing: 0.03em;
+        animation: fadeInUp 0.8s ease both 0.6s, neonPulsePink 3s ease-in-out infinite;
+        margin-bottom: var(--space-xl);
+      }
+*/

@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import FloatingMotifs from '@/components/FloatingMotifs';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -14,18 +13,8 @@ export default function Home() {
         <FloatingMotifs />
         <div className={styles.heroContent}>
           <p className={styles.heroGreeting}>Ciao, benvenuti</p>
-          <div className={styles.heroLogo}>
-            <Image
-              src="/images/antico-logo-transparent.png"
-              alt="Antico"
-              width={1295}
-              height={816}
-              quality={100}
-              className={styles.heroLogoImg}
-              priority
-            />
-          </div>
-          <p className={styles.heroAmore}>Amore</p>
+          <h1 className={styles.heroTitle}>Antico</h1>
+          <p className={styles.heroRistorante}>Ristoranté</p>
           <div className={styles.heroDivider} />
           <p className={styles.heroTagline}>Life's Too Short For Average Food</p>
           <p className={styles.heroSub}>Fine Italian Dining · Sault Ste. Marie</p>

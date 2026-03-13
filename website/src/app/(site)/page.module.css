@@ -64,43 +64,70 @@
   animation: fadeInUp 0.8s ease both 0.2s;
 }
 
-.heroLogo {
-  margin: 0 auto var(--space-md);
+/* ── Hero Title — Animated Gradient ── */
+.heroTitle {
+  font-family: var(--font-heading);
+  font-size: clamp(5rem, 14vw, 11rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-xs);
   animation: fadeInUp 0.8s ease both 0.4s;
+  /* Animated gradient text */
+  background: linear-gradient(
+    135deg,
+    var(--gold) 0%,
+    #f5d76e 15%,
+    var(--neon-pink) 35%,
+    #ff9ec6 50%,
+    var(--gold) 65%,
+    #f5d76e 85%,
+    var(--neon-pink) 100%
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: 
+    fadeInUp 0.8s ease both 0.4s,
+    heroGradientShift 6s ease-in-out infinite;
   position: relative;
 }
 
-.heroLogo::after {
+.heroTitle::after {
   content: '';
   position: absolute;
-  inset: -30%;
-  background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.12) 0%, transparent 60%);
-  z-index: 0;
+  inset: -40%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 215, 0, 0.08) 0%,
+    rgba(255, 107, 157, 0.04) 40%,
+    transparent 70%
+  );
+  z-index: -1;
   pointer-events: none;
   animation: heroGlowPulse 4s ease-in-out infinite;
 }
 
+@keyframes heroGradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 @keyframes heroGlowPulse {
-  0%, 100% { opacity: 0.7; }
+  0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
 }
 
-.heroLogoImg {
-  width: min(550px, 85vw);
-  height: auto;
-  object-fit: contain;
-  image-rendering: auto;
-  position: relative;
-  z-index: 1;
-}
-
-.heroAmore {
+.heroRistorante {
   font-family: var(--font-script);
-  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-size: clamp(1.8rem, 4vw, 3rem);
   color: var(--neon-pink);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-2xl);
   animation: fadeInUp 0.8s ease both 0.6s, neonPulsePink 3s ease-in-out infinite;
-  margin-bottom: var(--space-xl);
+  text-shadow: 0 0 30px rgba(255, 107, 157, 0.3), 0 0 60px rgba(255, 107, 157, 0.1);
 }
 
 .heroDivider {
