@@ -41,7 +41,7 @@
   position: relative;
   z-index: 2;
   text-align: center;
-  padding: 0 var(--space-2xl);
+  padding: 0 var(--space-2xl) 100px;
   animation: galleryFadeIn 1.2s ease both;
 }
 

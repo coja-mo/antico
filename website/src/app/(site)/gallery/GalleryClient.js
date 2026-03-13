@@ -154,10 +154,10 @@ export default function GalleryClient() {
             <br />
             A curated collection of original works — coming soon.
           </p>
-          <div className={styles.heroScroll}>
-            <span>Scroll to Explore</span>
-            <div className={styles.scrollLine} />
-          </div>
+        </div>
+        <div className={styles.heroScroll}>
+          <span>Scroll to Explore</span>
+          <div className={styles.scrollLine} />
         </div>
       </section>
 

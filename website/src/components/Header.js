@@ -8,11 +8,11 @@ import styles from './Header.module.css';
 const LEFT_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/menu', label: 'Menu' },
+  { href: '/chef', label: 'The Chef' },
+  { href: '/gallery', label: 'Gallery' },
 ];
 
 const RIGHT_LINKS = [
-  { href: '/chef', label: 'The Chef' },
-  { href: '/gallery', label: 'Gallery' },
   { href: '/contact', label: 'Contact' },
 ];
 
