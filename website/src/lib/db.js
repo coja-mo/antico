@@ -2,7 +2,10 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import { hashSync } from 'bcryptjs';
 
-const DB_PATH = path.join(process.cwd(), 'antico.db');
+// On Vercel serverless, process.cwd() is read-only — use /tmp instead
+const DB_PATH = process.env.VERCEL
+  ? '/tmp/antico.db'
+  : path.join(process.cwd(), 'antico.db');
 
 let db;
 
