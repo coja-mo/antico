@@ -1,0 +1,200 @@
+/* ═══════════════════════════════════════════════
+   CUSTOM CALENDAR — GLASSMORPHISM DARK/GOLD
+   ═══════════════════════════════════════════════ */
+
+.calendar {
+  background: rgba(18, 16, 12, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(212, 168, 75, 0.12);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 60px rgba(212, 168, 75, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  user-select: none;
+}
+
+/* ── Header: Month/Year Nav ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.monthYear {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #f5f0e8;
+  letter-spacing: 0.02em;
+}
+
+.navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.navBtn:hover:not(:disabled) {
+  background: rgba(212, 168, 75, 0.1);
+  border-color: rgba(212, 168, 75, 0.2);
+  color: #d4a84b;
+}
+
+.navBtn:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+/* ── Day Labels ── */
+.dayLabels {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.dayLabel {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.25);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 6px 0;
+}
+
+/* ── Day Grid ── */
+.dayGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.day {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #f5f0e8;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-variant-numeric: tabular-nums;
+}
+
+.day:hover:not(:disabled):not(.daySelected) {
+  background: rgba(212, 168, 75, 0.08);
+  border-color: rgba(212, 168, 75, 0.15);
+  color: #d4a84b;
+}
+
+/* Selected */
+.daySelected {
+  background: linear-gradient(135deg, rgba(212, 168, 75, 0.25), rgba(212, 168, 75, 0.12));
+  border-color: rgba(212, 168, 75, 0.4);
+  color: #f5d76e;
+  font-weight: 700;
+  box-shadow: 0 0 16px rgba(212, 168, 75, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Today */
+.dayToday {
+  border-color: rgba(212, 168, 75, 0.2);
+  color: #d4a84b;
+}
+
+/* Disabled (past) */
+.dayDisabled {
+  color: rgba(255, 255, 255, 0.12);
+  cursor: not-allowed;
+}
+
+.dayDisabled:hover {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* Closed day (not Wed-Sat) */
+.dayClosed {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Out of month */
+.dayOther {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.08);
+}
+
+/* Open night indicator dot */
+.openDot {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #4ade80;
+  opacity: 0.7;
+}
+
+.daySelected .openDot {
+  background: #f5d76e;
+  opacity: 1;
+}
+
+/* ── Legend ── */
+.legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.legendDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #4ade80;
+  opacity: 0.7;
+}
+
+.legendDotClosed {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}

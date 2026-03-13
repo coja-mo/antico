@@ -5,6 +5,7 @@ import {
   IconMapPin, IconPhone, IconWine, IconHeart, IconGift, IconBriefcase, IconSparkles,
   IconMail, IconUserCircle, IconAlertCircle, IconUtensils,
 } from '@/components/Icons';
+import Calendar from '@/components/Calendar';
 import styles from './page.module.css';
 
 /* ═══════════════════════════════════════════
@@ -159,8 +160,7 @@ export default function ReservePageClient() {
   const today = new Date().toISOString().split('T')[0];
 
   // ── Date change: check if it's an open day ──
-  const handleDateChange = useCallback((e) => {
-    const val = e.target.value;
+  const handleDateChange = useCallback((val) => {
     setForm(prev => ({ ...prev, date: val }));
     setErrors(prev => ({ ...prev, date: '' }));
 
@@ -506,13 +506,10 @@ export default function ReservePageClient() {
                       <IconCalendar size={16} className={styles.fieldLabelIcon} />
                       Preferred Date
                     </div>
-                    <input
-                      type="date"
-                      name="date"
+                    <Calendar
                       value={form.date}
                       onChange={handleDateChange}
-                      min={today}
-                      className={`${styles.dateInput} ${errors.date ? styles.formInputError : ''}`}
+                      minDate={today}
                     />
                     {errors.date && <p className={styles.fieldError}>{errors.date}</p>}
                     {dayWarning && (
