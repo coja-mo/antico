@@ -21,9 +21,26 @@ const greatVibes = Great_Vibes({
 });
 
 export const metadata = {
-  title: "Antico Ristoranté | Fine Italian Dining in Sault Ste. Marie",
+  title: {
+    default: "Antico Ristoranté | Fine Italian Dining in Sault Ste. Marie",
+    template: "%s | Antico Ristoranté",
+  },
   description: "Experience authentic Italian cuisine crafted by Chef Arturo Comegna. Antico Ristoranté offers an intimate fine dining experience in Sault Ste. Marie, Ontario.",
-  keywords: "Antico, Italian restaurant, fine dining, Sault Ste Marie, Chef Arturo, reservations",
+  keywords: ["Antico", "Italian restaurant", "fine dining", "Sault Ste Marie", "Chef Arturo", "reservations", "Ontario dining"],
+  authors: [{ name: "Antigravity Solutions" }],
+  openGraph: {
+    type: "website",
+    locale: "en_CA",
+    siteName: "Antico Ristoranté",
+    title: "Antico Ristoranté | Fine Italian Dining",
+    description: "Authentic Italian cuisine by Chef Arturo Comegna in Sault Ste. Marie, Ontario. Reserve your unforgettable evening.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Antico Ristoranté | Fine Italian Dining",
+    description: "Authentic Italian cuisine by Chef Arturo Comegna in Sault Ste. Marie.",
+  },
+  metadataBase: new URL("https://anticorestaurant.ca"),
 };
 
 export default function RootLayout({ children }) {
