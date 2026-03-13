@@ -4,7 +4,7 @@ export default function robots() {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin/', '/pos/', '/api/'],
+        disallow: ['/admin/', '/pos/', '/api/', '/dev/'],
       },
     ],
     sitemap: 'https://anticorestaurant.ca/sitemap.xml',
