@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { IconGrid, IconCheck, IconX, IconCreditCard, IconDollarSign, IconRefresh, IconFlame, IconChevronRight, IconArrowUp, IconClock, IconUsers, IconCalendar, IconUserCircle, IconMapPin, IconEdit, IconTrash, IconMessageSquare, IconPercent, IconGift, IconQrCode } from '@/components/Icons';
+import { IconGrid, IconCheck, IconX, IconCreditCard, IconDollarSign, IconRefresh, IconFlame, IconChevronRight, IconArrowUp, IconClock, IconUsers, IconCalendar, IconUserCircle, IconMapPin, IconEdit, IconTrash, IconMessageSquare, IconPercent, IconGift, IconPlus, IconSplitSquare, IconArrowRight, IconPrinter } from '@/components/Icons';
 import styles from './pos.module.css';
 
 /* ═══════════════════════════════════════════
@@ -61,10 +61,18 @@ export default function POSPage() {
   // Gift card
   const [showGiftCardModal, setShowGiftCardModal] = useState(false);
   const [gcCodeInput, setGcCodeInput] = useState('');
-  const [gcLookup, setGcLookup] = useState(null); // { code, balance, ... }
+  const [gcLookup, setGcLookup] = useState(null);
   const [gcLookupError, setGcLookupError] = useState('');
   const [gcLoading, setGcLoading] = useState(false);
-  const [gcRedeemResult, setGcRedeemResult] = useState(null); // { redeemed, remaining_balance, remainingToPay }
+  const [gcRedeemResult, setGcRedeemResult] = useState(null);
+
+  // POS Enhancements
+  const [bevSubcat, setBevSubcat] = useState('wine');
+  const [showSplitCheck, setShowSplitCheck] = useState(false);
+  const [splitPayments, setSplitPayments] = useState([]);
+  const [showTableTransfer, setShowTableTransfer] = useState(false);
+  const [showReceipt, setShowReceipt] = useState(null);
+  const [showWalkInModal, setShowWalkInModal] = useState(null);
 
   // Table timer
   const [now, setNow] = useState(Date.now());
@@ -353,6 +361,22 @@ export default function POSPage() {
       });
     }
 
+    // Build receipt data before clearing state
+    const receiptData = {
+      orderNumber: currentOrder?.id,
+      table: selectedTable ? `Table ${selectedTable.number}` : 'N/A',
+      server: selectedTable?.server_name || 'Staff',
+      guestName: currentOrder?.guest_name || selectedTable?._resoGuestName || null,
+      items: orderItems.filter(i => i.status !== 'voided'),
+      subtotal: subtotal,
+      discount: discountAmt,
+      tax: tax,
+      tip: parseFloat(tipAmount) || 0,
+      total: total,
+      paymentMethod: paymentMethod,
+      date: new Date(),
+    };
+
     setCurrentOrder(null);
     setOrderItems([]);
     setSelectedTable(null);
@@ -363,33 +387,50 @@ export default function POSPage() {
     setGcLookup(null);
     setGcRedeemResult(null);
     setGcCodeInput('');
+    setShowReceipt(receiptData);
     loadTables();
     loadTodayReservations();
   }
 
   // ── Gift Card Functions ──
   async function lookupGiftCard() {
-    if (!gcCodeInput.trim()) return;
+    const rawCode = gcCodeInput.trim();
+    if (!rawCode) return;
     setGcLoading(true);
     setGcLookupError('');
     setGcLookup(null);
     setGcRedeemResult(null);
     try {
-      const res = await fetch(`/api/gift-cards/${encodeURIComponent(gcCodeInput.trim())}`);
+      // Normalize: strip dashes, spaces, convert to uppercase for consistent lookup
+      const normalizedCode = rawCode.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+      if (normalizedCode.length !== 16) {
+        setGcLookupError('Invalid code format — must be 16 characters (e.g. XXXX-XXXX-XXXX-XXXX)');
+        setGcLoading(false);
+        return;
+      }
+      const formattedCode = normalizedCode.match(/.{1,4}/g).join('-');
+
+      const res = await fetch(`/api/gift-cards/${encodeURIComponent(formattedCode)}`);
       if (!res.ok) {
-        setGcLookupError('Gift card not found');
+        const errorData = await res.json().catch(() => ({}));
+        setGcLookupError(errorData.error || 'Gift card not found — check the code and try again');
         setGcLoading(false);
         return;
       }
       const data = await res.json();
       if (data.status !== 'active') {
-        setGcLookupError(`Gift card is ${data.status}`);
+        setGcLookupError(`This gift card is ${data.status}${data.status === 'depleted' ? ' (no balance remaining)' : ''}`);
+        setGcLoading(false);
+        return;
+      }
+      if (data.balance <= 0) {
+        setGcLookupError('This gift card has $0.00 remaining');
         setGcLoading(false);
         return;
       }
       setGcLookup(data);
     } catch {
-      setGcLookupError('Failed to look up gift card');
+      setGcLookupError('Connection error — unable to look up gift card');
     }
     setGcLoading(false);
   }
@@ -397,30 +438,40 @@ export default function POSPage() {
   async function redeemGiftCard() {
     if (!gcLookup || !currentOrder) return;
     setGcLoading(true);
+    setGcLookupError('');
     try {
       const res = await fetch(`/api/gift-cards/${encodeURIComponent(gcLookup.code)}/redeem`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: total, order_id: currentOrder.id }),
+        body: JSON.stringify({
+          amount: total,
+          order_id: currentOrder.id,
+          performed_by: `POS`,
+        }),
       });
       const data = await res.json();
-      if (res.ok) {
-        const remainingToPay = Math.round((total - data.redeemed) * 100) / 100;
-        setGcRedeemResult({ ...data, remainingToPay });
-        if (remainingToPay <= 0) {
-          // Fully covered — close the order
-          await closeOrder('gift_card', gcLookup.code, data.redeemed);
-        }
+      if (!res.ok) {
+        setGcLookupError(data.error || 'Redemption failed — gift card balance was NOT charged');
+        setGcLoading(false);
+        return;
+      }
+      const remainingToPay = Math.round((total - data.redeemed) * 100) / 100;
+      setGcRedeemResult({ ...data, remainingToPay });
+      if (remainingToPay <= 0) {
+        // Fully covered — close the order
+        await closeOrder('gift_card', gcLookup.code, data.redeemed);
       }
     } catch (err) {
-      console.error(err);
+      console.error('[POS GC Redeem Error]', err);
+      setGcLookupError('Connection error — gift card was NOT charged. Please try again.');
     }
     setGcLoading(false);
   }
 
   async function closeWithSplitPayment(secondaryMethod) {
-    if (!gcRedeemResult) return;
-    await closeOrder(`gift_card+${secondaryMethod}`, gcLookup.code, total - gcRedeemResult.remainingToPay);
+    if (!gcRedeemResult || !gcLookup) return;
+    const gcAmount = Math.round((total - gcRedeemResult.remainingToPay) * 100) / 100;
+    await closeOrder(`gift_card+${secondaryMethod}`, gcLookup.code, gcAmount);
   }
 
   async function updateTableStatus(tableId, status) {
@@ -432,15 +483,79 @@ export default function POSPage() {
     loadTables();
   }
 
+  // ── Walk-In Flow ──
+  async function startWalkIn(table) {
+    setSelectedTable(table);
+    await openNewOrder(null, null, null);
+    setView('order');
+    setShowWalkInModal(null);
+  }
+
+  // ── Table Transfer ──
+  async function transferTable(newTableId) {
+    if (!currentOrder) return;
+    // Update the order's table
+    await fetch('/api/tables', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: selectedTable.id, status: 'available', current_order_id: null, seated_at: null }),
+    });
+    await fetch('/api/tables', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: newTableId, status: 'occupied', current_order_id: currentOrder.id, seated_at: new Date().toISOString() }),
+    });
+    setShowTableTransfer(false);
+    loadTables();
+    const newTable = tables.find(t => t.id === newTableId);
+    if (newTable) setSelectedTable({ ...newTable, status: 'occupied', current_order_id: currentOrder.id });
+  }
+
+  // ── Split Check ──
+  function initSplitCheck() {
+    const perPerson = total / 2;
+    setSplitPayments([{ amount: perPerson, method: 'card' }, { amount: perPerson, method: 'card' }]);
+    setShowSplitCheck(true);
+  }
+
+  function addSplitPayment() {
+    const totalAssigned = splitPayments.reduce((s, p) => s + p.amount, 0);
+    const remaining = Math.max(0, total - totalAssigned);
+    setSplitPayments([...splitPayments, { amount: remaining, method: 'card' }]);
+  }
+
+  function updateSplitPayment(idx, field, value) {
+    const updated = [...splitPayments];
+    updated[idx] = { ...updated[idx], [field]: field === 'amount' ? parseFloat(value) || 0 : value };
+    setSplitPayments(updated);
+  }
+
+  function removeSplitPayment(idx) {
+    if (splitPayments.length <= 2) return;
+    setSplitPayments(splitPayments.filter((_, i) => i !== idx));
+  }
+
+  async function closeSplitCheck() {
+    const methods = splitPayments.map(p => p.method).join('+');
+    await closeOrder(`split:${methods}`, null, null);
+    setShowSplitCheck(false);
+    setSplitPayments([]);
+  }
+
   // ── Computed Values ──
   const categories = [
     { key: 'appetizer', label: 'Appetizers' },
     { key: 'salad', label: 'Salads' },
     { key: 'entree', label: 'Entrees' },
     { key: 'dessert', label: 'Desserts' },
+    { key: 'beverage', label: 'Beverages' },
   ];
 
-  const filteredMenu = menuItems.filter(i => i.category === activeCategory);
+  const filteredMenu = menuItems.filter(i => {
+    if (i.category !== activeCategory) return false;
+    if (activeCategory === 'beverage' && bevSubcat && i.subcategory !== bevSubcat) return false;
+    return true;
+  });
   const activeItems = orderItems.filter(i => i.status !== 'voided' && i.status !== 'comped');
   const subtotal = activeItems.reduce((s, i) => s + i.price * i.quantity, 0);
   const discountAmt = parseFloat(currentOrder?.discount_amount) || 0;
@@ -460,6 +575,8 @@ export default function POSPage() {
   const clockTime = new Date();
   const timeStr = clockTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   const availableTables = tables.filter(t => t.status === 'available');
+  const occupiedTables = tables.filter(t => t.status === 'occupied');
+  const totalCoversNow = occupiedTables.reduce((s, t) => s + (t.capacity || 0), 0);
 
   return (
     <div className={styles.posApp}>
@@ -505,7 +622,30 @@ export default function POSPage() {
         {view === 'floor' && (
           <div className={styles.floorLayout}>
             <div className={styles.floorMain}>
-              {/* Legend */}
+              {/* Quick Stats Bar */}
+              <div className={styles.quickStatsBar}>
+                <div className={styles.quickStat}>
+                  <span className={styles.quickStatValue}>{occupiedTables.length}</span>
+                  <span className={styles.quickStatLabel}>Active Tables</span>
+                </div>
+                <div className={styles.quickStatDivider} />
+                <div className={styles.quickStat}>
+                  <span className={styles.quickStatValue}>{availableTables.length}</span>
+                  <span className={styles.quickStatLabel}>Available</span>
+                </div>
+                <div className={styles.quickStatDivider} />
+                <div className={styles.quickStat}>
+                  <span className={styles.quickStatValue}>{totalCoversNow}</span>
+                  <span className={styles.quickStatLabel}>Covers</span>
+                </div>
+                <div className={styles.quickStatDivider} />
+                <div className={styles.quickStat}>
+                  <span className={styles.quickStatValue}>{todayReservations.filter(r => r.status === 'confirmed').length}</span>
+                  <span className={styles.quickStatLabel}>Upcoming</span>
+                </div>
+              </div>
+
+              {/* Legend + Walk-In */}
               <div className={styles.floorLegend}>
                 {Object.entries(statusConfig).map(([key, cfg]) => (
                   <div key={key} className={styles.legendItem}>
@@ -514,6 +654,9 @@ export default function POSPage() {
                   </div>
                 ))}
                 <div style={{ flex: 1 }} />
+                <button className={styles.walkInBtn} onClick={() => setShowWalkInModal(true)}>
+                  <IconPlus size={13} /> Walk-In
+                </button>
                 <button className={styles.refreshBtn} onClick={() => { loadTables(); loadTodayReservations(); }}>
                   <IconRefresh size={14} /> Refresh
                 </button>
@@ -670,6 +813,15 @@ export default function POSPage() {
                   </button>
                 ))}
               </div>
+              {activeCategory === 'beverage' && (
+                <div className={styles.bevSubTabs}>
+                  {[{key:'wine',label:'Wine'},{key:'cocktail',label:'Cocktails'},{key:'beer',label:'Beer'},{key:'non-alcoholic',label:'Non-Alcoholic'}].map(sub => (
+                    <button key={sub.key} className={`${styles.bevSubTab} ${bevSubcat === sub.key ? styles.bevSubTabActive : ''}`} onClick={() => setBevSubcat(sub.key)}>
+                      {sub.label}
+                    </button>
+                  ))}
+                </div>
+              )}
               <div className={styles.menuGrid}>
                 {filteredMenu.map(item => (
                   <button key={item.id} className={styles.menuItem} onClick={() => addItem(item)} disabled={!currentOrder}>
@@ -808,6 +960,12 @@ export default function POSPage() {
                     </button>
                     <button className={styles.orderToolBtn} onClick={() => { setOrderNotes(currentOrder.order_notes || ''); setShowOrderNotes(true); }}>
                       <IconMessageSquare size={12} /> Notes
+                    </button>
+                    <button className={styles.orderToolBtn} onClick={initSplitCheck}>
+                      <IconSplitSquare size={12} /> Split
+                    </button>
+                    <button className={styles.orderToolBtn} onClick={() => setShowTableTransfer(true)}>
+                      <IconArrowRight size={12} /> Transfer
                     </button>
                   </div>
 
@@ -1014,7 +1172,6 @@ export default function POSPage() {
 
             {!gcRedeemResult ? (
               <>
-                {/* Code Entry */}
                 <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
                   <input
                     className={styles.serverModalInput}
@@ -1025,21 +1182,11 @@ export default function POSPage() {
                     autoFocus
                     style={{ flex: 1, fontFamily: 'monospace', letterSpacing: '0.08em' }}
                   />
-                  <button
-                    className={styles.serverModalSave}
-                    onClick={lookupGiftCard}
-                    disabled={gcLoading || !gcCodeInput.trim()}
-                    style={{ whiteSpace: 'nowrap' }}
-                  >
-                    <IconQrCode size={13} /> Lookup
+                  <button className={styles.serverModalSave} onClick={lookupGiftCard} disabled={gcLoading || !gcCodeInput.trim()} style={{ whiteSpace: 'nowrap' }}>
+                    Lookup
                   </button>
                 </div>
-
-                {gcLookupError && (
-                  <p style={{ color: 'var(--danger)', fontSize: '0.8rem', marginBottom: 12 }}>{gcLookupError}</p>
-                )}
-
-                {/* Card Found */}
+                {gcLookupError && <p style={{ color: 'var(--danger)', fontSize: '0.8rem', marginBottom: 12 }}>{gcLookupError}</p>}
                 {gcLookup && (
                   <div style={{ background: 'var(--bg-secondary)', borderRadius: 8, padding: 16, marginBottom: 16, border: '1px solid var(--border-medium)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -1054,25 +1201,12 @@ export default function POSPage() {
                       <span style={{ color: 'var(--text-muted)' }}>Balance</span>
                       <span style={{ fontWeight: 700, color: 'var(--gold)', fontSize: '1.1rem' }}>${gcLookup.balance.toFixed(2)}</span>
                     </div>
-                    {gcLookup.recipient_name && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                        <span style={{ color: 'var(--text-muted)' }}>Recipient</span>
-                        <span>{gcLookup.recipient_name}</span>
-                      </div>
-                    )}
-
                     {gcLookup.balance < total && (
                       <div style={{ background: 'var(--warning-bg)', color: 'var(--warning)', padding: '8px 12px', borderRadius: 6, fontSize: '0.78rem', marginTop: 12 }}>
-                        Card balance (${gcLookup.balance.toFixed(2)}) is less than total (${total.toFixed(2)}). The remaining ${(total - gcLookup.balance).toFixed(2)} will need a secondary payment.
+                        Card balance (${gcLookup.balance.toFixed(2)}) is less than total (${total.toFixed(2)}). Remaining will need secondary payment.
                       </div>
                     )}
-
-                    <button
-                      className={styles.serverModalSave}
-                      style={{ width: '100%', marginTop: 12, padding: '12px 16px', fontSize: '0.9rem' }}
-                      onClick={redeemGiftCard}
-                      disabled={gcLoading}
-                    >
+                    <button className={styles.serverModalSave} style={{ width: '100%', marginTop: 12, padding: '12px 16px' }} onClick={redeemGiftCard} disabled={gcLoading}>
                       {gcLoading ? 'Processing...' : `Redeem $${Math.min(gcLookup.balance, total).toFixed(2)}`}
                     </button>
                   </div>
@@ -1080,44 +1214,209 @@ export default function POSPage() {
               </>
             ) : (
               <>
-                {/* Redemption Result */}
                 <div style={{ background: 'var(--success-bg)', borderRadius: 8, padding: 16, marginBottom: 16, border: '1px solid rgba(74,222,128,0.2)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, color: 'var(--success)', fontWeight: 600 }}>
                     <IconCheck size={16} /> Gift Card Redeemed
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: 4 }}>
-                    <span style={{ color: 'var(--text-muted)' }}>Amount Redeemed</span>
-                    <span style={{ fontWeight: 600 }}>${Math.abs(gcRedeemResult.redeemed).toFixed(2)}</span>
+                    <span style={{ color: 'var(--text-muted)' }}>Redeemed</span><span style={{ fontWeight: 600 }}>${Math.abs(gcRedeemResult.redeemed).toFixed(2)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                    <span style={{ color: 'var(--text-muted)' }}>Card Remaining Balance</span>
-                    <span>${gcRedeemResult.remaining_balance.toFixed(2)}</span>
+                    <span style={{ color: 'var(--text-muted)' }}>Remaining Balance</span><span>${gcRedeemResult.remaining_balance.toFixed(2)}</span>
                   </div>
                 </div>
-
-                {/* Split Payment Needed */}
                 {gcRedeemResult.remainingToPay > 0 && (
                   <div>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--warning)', marginBottom: 12, fontWeight: 500 }}>
-                      Remaining to pay: ${gcRedeemResult.remainingToPay.toFixed(2)}
-                    </p>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--warning)', marginBottom: 12, fontWeight: 500 }}>Remaining: ${gcRedeemResult.remainingToPay.toFixed(2)}</p>
                     <div style={{ display: 'flex', gap: 8 }}>
-                      <button className={styles.payMethodBtn} onClick={() => closeWithSplitPayment('card')} style={{ flex: 1 }}>
-                        <IconCreditCard size={14} />
-                        <span>Card</span>
-                      </button>
-                      <button className={styles.payMethodBtn} onClick={() => closeWithSplitPayment('cash')} style={{ flex: 1 }}>
-                        <IconDollarSign size={14} />
-                        <span>Cash</span>
-                      </button>
+                      <button className={styles.payMethodBtn} onClick={() => closeWithSplitPayment('card')} style={{ flex: 1 }}><IconCreditCard size={14} /><span>Card</span></button>
+                      <button className={styles.payMethodBtn} onClick={() => closeWithSplitPayment('cash')} style={{ flex: 1 }}><IconDollarSign size={14} /><span>Cash</span></button>
                     </div>
                   </div>
                 )}
               </>
             )}
-
             <div className={styles.serverModalActions} style={{ marginTop: 16 }}>
               <button className={styles.serverModalClear} onClick={() => setShowGiftCardModal(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════
+          WALK-IN TABLE SELECTOR
+          ══════════════════════════════════════════════ */}
+      {showWalkInModal && (
+        <div className={styles.modalOverlay} onClick={() => setShowWalkInModal(null)}>
+          <div className={styles.serverModal} style={{ maxWidth: 480 }} onClick={e => e.stopPropagation()}>
+            <h4>Walk-In — Select a Table</h4>
+            <p className={styles.serverModalSub}>Choose an available table to start a new order</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, margin: '16px 0' }}>
+              {availableTables.map(t => (
+                <button key={t.id} className={styles.walkInTableBtn} onClick={() => startWalkIn(t)}>
+                  <span style={{ fontWeight: 700, fontSize: '1rem' }}>{t.number}</span>
+                  <span style={{ fontSize: '0.65rem', color: 'rgba(255 255 255 / 0.4)' }}>{t.capacity} seats</span>
+                </button>
+              ))}
+              {availableTables.length === 0 && (
+                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: 20, color: 'rgba(255 255 255 / 0.3)', fontSize: '0.85rem' }}>No tables available</div>
+              )}
+            </div>
+            <div className={styles.serverModalActions}>
+              <button className={styles.serverModalClear} onClick={() => setShowWalkInModal(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════
+          TABLE TRANSFER MODAL
+          ══════════════════════════════════════════════ */}
+      {showTableTransfer && (
+        <div className={styles.modalOverlay} onClick={() => setShowTableTransfer(false)}>
+          <div className={styles.serverModal} style={{ maxWidth: 480 }} onClick={e => e.stopPropagation()}>
+            <h4>Transfer Table</h4>
+            <p className={styles.serverModalSub}>Move order #{currentOrder?.id} to a different table</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, margin: '16px 0' }}>
+              {availableTables.map(t => (
+                <button key={t.id} className={styles.walkInTableBtn} onClick={() => transferTable(t.id)}>
+                  <span style={{ fontWeight: 700, fontSize: '1rem' }}>{t.number}</span>
+                  <span style={{ fontSize: '0.65rem', color: 'rgba(255 255 255 / 0.4)' }}>{t.zone}</span>
+                </button>
+              ))}
+              {availableTables.length === 0 && (
+                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: 20, color: 'rgba(255 255 255 / 0.3)', fontSize: '0.85rem' }}>No available tables to transfer to</div>
+              )}
+            </div>
+            <div className={styles.serverModalActions}>
+              <button className={styles.serverModalClear} onClick={() => setShowTableTransfer(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════
+          SPLIT CHECK MODAL
+          ══════════════════════════════════════════════ */}
+      {showSplitCheck && (
+        <div className={styles.modalOverlay} onClick={() => setShowSplitCheck(false)}>
+          <div className={styles.serverModal} style={{ maxWidth: 480 }} onClick={e => e.stopPropagation()}>
+            <h4 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <IconSplitSquare size={18} /> Split Check
+            </h4>
+            <p className={styles.serverModalSub}>Total: ${total.toFixed(2)}</p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, margin: '16px 0' }}>
+              {splitPayments.map((p, i) => (
+                <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'rgba(255 255 255 / 0.3)', width: 60, flexShrink: 0 }}>Guest {i + 1}</span>
+                  <input
+                    className={styles.serverModalInput}
+                    type="number" step="0.01"
+                    value={p.amount || ''}
+                    onChange={e => updateSplitPayment(i, 'amount', e.target.value)}
+                    style={{ flex: 1 }}
+                  />
+                  <select
+                    value={p.method}
+                    onChange={e => updateSplitPayment(i, 'method', e.target.value)}
+                    style={{ padding: '8px 10px', background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)', borderRadius: 6, color: 'var(--text-primary)', fontSize: '0.82rem' }}
+                  >
+                    <option value="card">Card</option>
+                    <option value="cash">Cash</option>
+                  </select>
+                  {splitPayments.length > 2 && (
+                    <button className={styles.serverModalClear} onClick={() => removeSplitPayment(i)} style={{ padding: '6px 8px' }}>
+                      <IconX size={12} />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <button className={styles.orderToolBtn} onClick={addSplitPayment} style={{ width: '100%', justifyContent: 'center', marginBottom: 12 }}>
+              <IconPlus size={12} /> Add Guest
+            </button>
+
+            {(() => {
+              const splitTotal = splitPayments.reduce((s, p) => s + p.amount, 0);
+              const diff = Math.abs(splitTotal - total);
+              return diff > 0.01 ? (
+                <p style={{ fontSize: '0.78rem', color: 'var(--warning)', marginBottom: 8 }}>
+                  Split total: ${splitTotal.toFixed(2)} (${splitTotal > total ? '+' : '-'}${diff.toFixed(2)} {splitTotal > total ? 'over' : 'under'})
+                </p>
+              ) : null;
+            })()}
+
+            <div className={styles.serverModalActions}>
+              <button className={styles.serverModalClear} onClick={() => setShowSplitCheck(false)}>Cancel</button>
+              <button className={styles.serverModalSave} onClick={closeSplitCheck}>Close Split Check</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════
+          RECEIPT VIEW
+          ══════════════════════════════════════════════ */}
+      {showReceipt && (
+        <div className={styles.modalOverlay} onClick={() => setShowReceipt(null)}>
+          <div className={styles.receiptModal} onClick={e => e.stopPropagation()}>
+            <div className={styles.receiptContent}>
+              <div className={styles.receiptBrand}>
+                <div className={styles.receiptBrandName}>ANTICO</div>
+                <div className={styles.receiptBrandSub}>RISTORANTÉ</div>
+                <div className={styles.receiptBrandAddr}>531 Queen Street East · SSM, ON</div>
+              </div>
+
+              <div className={styles.receiptDivider} />
+
+              <div className={styles.receiptMeta}>
+                <div><span>Order</span><span>#{showReceipt.orderNumber}</span></div>
+                <div><span>{showReceipt.table}</span><span>Server: {showReceipt.server}</span></div>
+                {showReceipt.guestName && <div><span>Guest</span><span>{showReceipt.guestName}</span></div>}
+                <div><span>Date</span><span>{showReceipt.date.toLocaleDateString()} {showReceipt.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></div>
+              </div>
+
+              <div className={styles.receiptDivider} />
+
+              <div className={styles.receiptItems}>
+                {showReceipt.items.map((item, i) => (
+                  <div key={i} className={styles.receiptItem}>
+                    <span>{item.quantity}x {item.name}{item.status === 'comped' ? ' (COMP)' : ''}</span>
+                    <span>${item.status === 'comped' ? '0.00' : (item.price * item.quantity).toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className={styles.receiptDivider} />
+
+              <div className={styles.receiptTotals}>
+                <div><span>Subtotal</span><span>${showReceipt.subtotal.toFixed(2)}</span></div>
+                {showReceipt.discount > 0 && <div><span>Discount</span><span>-${showReceipt.discount.toFixed(2)}</span></div>}
+                <div><span>HST (13%)</span><span>${showReceipt.tax.toFixed(2)}</span></div>
+                {showReceipt.tip > 0 && <div><span>Tip</span><span>${showReceipt.tip.toFixed(2)}</span></div>}
+                <div className={styles.receiptGrandTotal}>
+                  <span>TOTAL</span><span>${showReceipt.total.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <div className={styles.receiptDivider} />
+
+              <div className={styles.receiptPayMethod}>
+                Paid by: {showReceipt.paymentMethod}
+              </div>
+
+              <div className={styles.receiptThankYou}>
+                Thank you for dining with us!
+              </div>
+            </div>
+
+            <div className={styles.receiptActions}>
+              <button className={styles.serverModalClear} onClick={() => setShowReceipt(null)}>Close</button>
+              <button className={styles.serverModalSave} onClick={() => window.print()}>
+                <IconPrinter size={13} /> Print
+              </button>
             </div>
           </div>
         </div>

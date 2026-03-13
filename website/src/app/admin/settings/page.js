@@ -25,6 +25,7 @@ export default function SettingsPage() {
         {[
           { key: 'menu', label: 'Menu Editor', icon: '🍽' },
           { key: 'staff', label: 'Staff', icon: '👤' },
+          { key: 'floor', label: 'Floor Plan', icon: '🗺' },
           { key: 'info', label: 'Restaurant Info', icon: '📍' },
           { key: 'hours', label: 'Hours', icon: '🕐' },
         ].map(t => (
@@ -39,6 +40,7 @@ export default function SettingsPage() {
 
       {tab === 'menu' && <MenuEditorTab />}
       {tab === 'staff' && <StaffTab />}
+      {tab === 'floor' && <FloorPlanTab />}
       {tab === 'info' && <RestaurantInfoTab />}
       {tab === 'hours' && <HoursTab />}
     </div>
@@ -501,5 +503,162 @@ function HoursTab() {
         ))}
       </div>
     </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   FLOOR PLAN TAB
+   ═══════════════════════════════════════════ */
+function FloorPlanTab() {
+  const [tables, setTables] = useState([]);
+  const [showAdd, setShowAdd] = useState(false);
+  const [newTable, setNewTable] = useState({ number: '', capacity: 4, zone: 'main', shape: 'square' });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => { loadTables(); }, []);
+
+  async function loadTables() {
+    setLoading(true);
+    const res = await fetch('/api/tables');
+    setTables(await res.json());
+    setLoading(false);
+  }
+
+  async function addTable() {
+    if (!newTable.number || !newTable.capacity) return;
+    await fetch('/api/tables/manage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newTable),
+    });
+    setShowAdd(false);
+    setNewTable({ number: '', capacity: 4, zone: 'main', shape: 'square' });
+    loadTables();
+  }
+
+  async function deleteTable(id, name) {
+    if (!confirm(`Remove ${name}? This cannot be undone.`)) return;
+    await fetch(`/api/tables/manage?id=${id}`, { method: 'DELETE' });
+    loadTables();
+  }
+
+  const zones = [...new Set(tables.map(t => t.zone))];
+  const zoneColors = { main: '#3b82f6', window: '#22c55e', bar: '#a855f7', patio: '#f59e0b', private: '#ef4444' };
+
+  return (
+    <>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 12 }}>
+          {zones.map(z => (
+            <div key={z} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: zoneColors[z] || '#666' }} />
+              {z.charAt(0).toUpperCase() + z.slice(1)} ({tables.filter(t => t.zone === z).length})
+            </div>
+          ))}
+        </div>
+        <button className={`${styles.actionBtn} ${styles.actionBtnGold}`} onClick={() => setShowAdd(true)}>
+          <IconPlus size={13} /> Add Table
+        </button>
+      </div>
+
+      {showAdd && (
+        <div className={styles.cardSection} style={{ marginBottom: 16 }}>
+          <div className={styles.cardSectionHeader}>
+            <span className={styles.cardSectionTitle}>New Table</span>
+            <button className={styles.closeBtn} onClick={() => setShowAdd(false)}><IconX size={14} /></button>
+          </div>
+          <div className={styles.cardSectionContent} style={{ padding: 20 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12 }}>
+              <div className={styles.formField}>
+                <label>Number</label>
+                <input type="number" value={newTable.number} onChange={e => setNewTable({...newTable, number: e.target.value})} placeholder="13" />
+              </div>
+              <div className={styles.formField}>
+                <label>Capacity</label>
+                <input type="number" value={newTable.capacity} onChange={e => setNewTable({...newTable, capacity: parseInt(e.target.value) || 2})} />
+              </div>
+              <div className={styles.formField}>
+                <label>Zone</label>
+                <select value={newTable.zone} onChange={e => setNewTable({...newTable, zone: e.target.value})} style={selectStyle}>
+                  <option value="main">Main</option>
+                  <option value="window">Window</option>
+                  <option value="bar">Bar</option>
+                  <option value="patio">Patio</option>
+                  <option value="private">Private</option>
+                </select>
+              </div>
+              <div className={styles.formField}>
+                <label>Shape</label>
+                <select value={newTable.shape} onChange={e => setNewTable({...newTable, shape: e.target.value})} style={selectStyle}>
+                  <option value="square">Square</option>
+                  <option value="round">Round</option>
+                  <option value="rect">Rectangle</option>
+                </select>
+              </div>
+            </div>
+            <div style={{ marginTop: 16, display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button className={`${styles.actionBtn} ${styles.actionBtnDefault}`} onClick={() => setShowAdd(false)}>Cancel</button>
+              <button className={`${styles.actionBtn} ${styles.actionBtnConfirm}`} onClick={addTable} disabled={!newTable.number}>
+                <IconCheck size={13} /> Add Table
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className={styles.cardSection}>
+        <div className={styles.cardSectionContent}>
+          <table className={styles.dataTable}>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Capacity</th>
+                <th>Zone</th>
+                <th>Shape</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={7} style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Loading...</td></tr>
+              ) : tables.map(t => (
+                <tr key={t.id}>
+                  <td className={styles.cellPrimary}>{t.number}</td>
+                  <td>{t.name || `Table ${t.number}`}</td>
+                  <td>{t.capacity} seats</td>
+                  <td>
+                    <span style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 5,
+                      padding: '2px 8px', borderRadius: 10, fontSize: '0.72rem',
+                      background: `${zoneColors[t.zone] || '#666'}15`,
+                      color: zoneColors[t.zone] || '#666',
+                      textTransform: 'capitalize',
+                    }}>{t.zone}</span>
+                  </td>
+                  <td style={{ textTransform: 'capitalize', fontSize: '0.8rem', color: 'var(--text-muted)' }}>{t.shape}</td>
+                  <td>
+                    <span className={`${styles.statusBadge} ${t.status === 'available' ? styles.statusConfirmed : styles.statusSeated}`}
+                      style={{ textTransform: 'capitalize' }}>
+                      {t.status}
+                    </span>
+                  </td>
+                  <td>
+                    <button className={`${styles.actionBtn} ${styles.actionBtnDanger}`} onClick={() => deleteTable(t.id, t.name || `Table ${t.number}`)}>
+                      <IconTrash size={12} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 12, padding: '10px 16px', background: 'rgba(212,168,75,0.04)', border: '1px solid rgba(212,168,75,0.1)', borderRadius: 8, fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+        Total: {tables.length} tables · {tables.reduce((s, t) => s + t.capacity, 0)} seats
+      </div>
+    </>
   );
 }

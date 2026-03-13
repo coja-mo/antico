@@ -2,8 +2,8 @@ import { getDb } from '@/lib/db';
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
-function getCustomerFromToken(db) {
-  const cookieStore = cookies();
+async function getCustomerFromToken(db) {
+  const cookieStore = await cookies();
   const token = cookieStore.get('antico_customer')?.value;
   if (!token) return null;
 
@@ -21,7 +21,7 @@ function getCustomerFromToken(db) {
 export async function GET() {
   try {
     const db = getDb();
-    const account = getCustomerFromToken(db);
+    const account = await getCustomerFromToken(db);
 
     if (!account) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -51,7 +51,7 @@ export async function GET() {
 export async function PATCH(request) {
   try {
     const db = getDb();
-    const account = getCustomerFromToken(db);
+    const account = await getCustomerFromToken(db);
     if (!account) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
     const body = await request.json();

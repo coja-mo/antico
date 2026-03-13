@@ -25,23 +25,45 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: radial-gradient(ellipse at 50% 40%, #1e1810 0%, #14100a 40%, #0a0a0a 80%);
+  background:
+    radial-gradient(ellipse at 50% 30%, #2a1f14 0%, transparent 55%),
+    radial-gradient(ellipse at 20% 70%, #1a120e 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, #1e140d 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 90%, #0d0806 0%, transparent 40%),
+    linear-gradient(180deg, #12100c 0%, #0a0908 40%, #080706 100%);
 }
 
 .heroOverlay {
   position: absolute;
   inset: 0;
-  background: 
-    radial-gradient(circle at 30% 40%, rgba(255, 215, 0, 0.04) 0%, transparent 50%),
-    radial-gradient(circle at 70% 60%, rgba(255, 107, 157, 0.025) 0%, transparent 50%);
+  background:
+    radial-gradient(circle at 25% 35%, rgba(212, 168, 75, 0.045) 0%, transparent 45%),
+    radial-gradient(circle at 75% 55%, rgba(255, 107, 157, 0.025) 0%, transparent 45%),
+    radial-gradient(circle at 50% 80%, rgba(200, 160, 80, 0.02) 0%, transparent 40%);
   pointer-events: none;
+  animation: vignetteBreatheSlow 8s ease-in-out infinite;
+}
+
+@keyframes vignetteBreatheSlow {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+/* Animated vignette border */
+.heroOverlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, transparent 45%, rgba(0, 0, 0, 0.5) 100%);
+  pointer-events: none;
+  animation: vignetteBreatheSlow 12s ease-in-out infinite reverse;
 }
 
 .heroOverlay::after {
   content: '';
   position: absolute;
   inset: 0;
-  opacity: 0.03;
+  opacity: 0.045;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   pointer-events: none;
 }
@@ -50,8 +72,8 @@
   position: relative;
   z-index: 2;
   text-align: center;
-  padding: calc(var(--header-height) + 40px) var(--space-2xl) 120px;
-  animation: fadeIn 1s ease both;
+  padding: calc(var(--header-height) + 60px) var(--space-2xl) 140px;
+  animation: fadeIn 1.2s ease both;
 }
 
 .heroGreeting {
@@ -71,7 +93,7 @@
   font-weight: 700;
   line-height: 0.9;
   letter-spacing: -0.02em;
-  margin-bottom: var(--space-xs);
+  margin-bottom: var(--space-sm);
   animation: fadeInUp 0.8s ease both 0.4s;
   /* Animated gradient text */
   background: linear-gradient(
@@ -97,16 +119,19 @@
 .heroTitle::after {
   content: '';
   position: absolute;
-  inset: -40%;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(255, 215, 0, 0.08) 0%,
-    rgba(255, 107, 157, 0.04) 40%,
-    transparent 70%
-  );
+  inset: -50%;
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(212, 168, 75, 0.12) 0%,
+      rgba(255, 200, 120, 0.06) 25%,
+      rgba(255, 107, 157, 0.04) 45%,
+      transparent 70%
+    );
   z-index: -1;
   pointer-events: none;
-  animation: heroGlowPulse 4s ease-in-out infinite;
+  animation: heroGlowPulse 5s ease-in-out infinite;
+  filter: blur(8px);
 }
 
 @keyframes heroGradientShift {
@@ -116,8 +141,8 @@
 }
 
 @keyframes heroGlowPulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+  0%, 100% { opacity: 0.5; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.05); }
 }
 
 .heroRistorante {
@@ -131,29 +156,30 @@
 }
 
 .heroDivider {
-  width: 80px;
+  width: 100px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  margin: 0 auto var(--space-xl);
+  background: linear-gradient(90deg, transparent, var(--gold-light), var(--gold), var(--gold-light), transparent);
+  margin: var(--space-sm) auto var(--space-2xl);
   animation: fadeInUp 0.8s ease both 0.7s;
+  box-shadow: 0 0 12px rgba(212, 168, 75, 0.2);
 }
 
 .heroTagline {
   font-family: var(--font-heading);
-  font-size: clamp(1rem, 2vw, 1.3rem);
+  font-size: clamp(1.05rem, 2.2vw, 1.4rem);
   font-style: italic;
   color: var(--text-secondary);
-  letter-spacing: 0.05em;
-  margin-bottom: var(--space-sm);
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-md);
   animation: fadeInUp 0.8s ease both 0.8s;
 }
 
 .heroSub {
   font-size: 0.85rem;
   color: var(--text-muted);
-  letter-spacing: 0.15em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  margin-bottom: var(--space-2xl);
+  margin-bottom: var(--space-3xl);
   animation: fadeInUp 0.8s ease both 0.9s;
 }
 

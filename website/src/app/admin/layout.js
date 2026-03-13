@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { IconGrid, IconCalendar, IconFlame, IconUsers, IconLogOut, IconExternalLink, IconDollarSign, IconSettings, IconBarChart, IconGift, IconPrinter } from '@/components/Icons';
+import { IconGrid, IconCalendar, IconFlame, IconUsers, IconLogOut, IconExternalLink, IconDollarSign, IconSettings, IconBarChart, IconGift, IconPrinter, IconPackage, IconCalendarClock, IconListOrdered, IconLock } from '@/components/Icons';
 import styles from './admin.module.css';
 
 export default function AdminLayout({ children }) {
@@ -108,6 +108,8 @@ export default function AdminLayout({ children }) {
         { href: '/admin/orders', label: 'Orders', icon: IconDollarSign },
         { href: '/pos', label: 'POS Terminal', icon: IconExternalLink, external: true },
         { href: '/admin/kds', label: 'Kitchen Display', icon: IconFlame },
+        { href: '/admin/waitlist', label: 'Waitlist', icon: IconListOrdered },
+        { href: '/admin/closeout', label: 'Closeout', icon: IconLock },
       ],
     },
     {
@@ -115,6 +117,8 @@ export default function AdminLayout({ children }) {
       items: [
         { href: '/admin/guests', label: 'Guest Database', icon: IconUsers },
         { href: '/admin/gift-cards', label: 'Gift Cards', icon: IconGift },
+        { href: '/admin/inventory', label: 'Inventory', icon: IconPackage },
+        { href: '/admin/scheduling', label: 'Scheduling', icon: IconCalendarClock },
         { href: '/admin/settings', label: 'Settings', icon: IconSettings },
       ],
     },

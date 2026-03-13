@@ -176,6 +176,72 @@ function initializeDatabase(db) {
       performed_by TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS inventory_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      category TEXT NOT NULL DEFAULT 'other',
+      unit TEXT NOT NULL DEFAULT 'ea',
+      quantity REAL DEFAULT 0,
+      par_level REAL DEFAULT 0,
+      cost_per_unit REAL DEFAULT 0,
+      supplier TEXT,
+      last_restocked DATETIME,
+      notes TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS inventory_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      item_id INTEGER NOT NULL REFERENCES inventory_items(id),
+      action TEXT NOT NULL,
+      quantity_change REAL NOT NULL,
+      cost REAL DEFAULT 0,
+      performed_by TEXT,
+      notes TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS shifts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      staff_id INTEGER NOT NULL REFERENCES staff(id),
+      date TEXT NOT NULL,
+      start_time TEXT NOT NULL,
+      end_time TEXT NOT NULL,
+      role TEXT DEFAULT 'server',
+      notes TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS waitlist (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      guest_name TEXT NOT NULL,
+      phone TEXT,
+      party_size INTEGER NOT NULL DEFAULT 1,
+      notes TEXT,
+      status TEXT DEFAULT 'waiting',
+      quoted_wait INTEGER DEFAULT 15,
+      added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      notified_at DATETIME,
+      seated_at DATETIME
+    );
+
+    CREATE TABLE IF NOT EXISTS closeouts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      date TEXT NOT NULL UNIQUE,
+      total_revenue REAL DEFAULT 0,
+      total_orders INTEGER DEFAULT 0,
+      total_tips REAL DEFAULT 0,
+      card_total REAL DEFAULT 0,
+      cash_total REAL DEFAULT 0,
+      gift_card_total REAL DEFAULT 0,
+      expected_cash REAL DEFAULT 0,
+      counted_cash REAL DEFAULT 0,
+      variance REAL DEFAULT 0,
+      notes TEXT,
+      closed_by TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   // Add new columns to existing tables (safe for existing DBs)
@@ -192,6 +258,15 @@ function initializeDatabase(db) {
   safeAddColumn('reservations', 'server_name', 'TEXT');
   safeAddColumn('orders', 'gift_card_code', 'TEXT');
   safeAddColumn('orders', 'gift_card_amount', 'REAL DEFAULT 0');
+  safeAddColumn('gift_cards', 'expires_at', 'DATETIME');
+
+  // ── Gift Card Indexes (safe for re-runs) ──
+  try { db.exec('CREATE INDEX IF NOT EXISTS idx_gift_cards_code ON gift_cards(code)'); } catch {}
+  try { db.exec('CREATE INDEX IF NOT EXISTS idx_gift_cards_status ON gift_cards(status)'); } catch {}
+  try { db.exec('CREATE INDEX IF NOT EXISTS idx_gift_cards_customer ON gift_cards(customer_account_id)'); } catch {}
+  try { db.exec('CREATE INDEX IF NOT EXISTS idx_gift_card_tx_card_id ON gift_card_transactions(gift_card_id)'); } catch {}
+  try { db.exec('CREATE INDEX IF NOT EXISTS idx_gift_card_tx_order_id ON gift_card_transactions(order_id)'); } catch {}
+  try { db.exec('CREATE INDEX IF NOT EXISTS idx_orders_gift_card ON orders(gift_card_code)'); } catch {}
 
   // Seed default admin if none exists
   const adminExists = db.prepare('SELECT id FROM staff WHERE username = ?').get('admin');
@@ -289,6 +364,60 @@ function initializeDatabase(db) {
     const stmt = db.prepare('INSERT INTO menu_items (name, description, category, subcategory, price, sort_order) VALUES (?, ?, ?, ?, ?, ?)');
     for (const item of items) {
       stmt.run(item.name, item.description, item.category, item.subcategory || null, item.price, item.sort);
+    }
+  }
+
+  // Seed inventory if none exist
+  const invCount = db.prepare('SELECT COUNT(*) as count FROM inventory_items').get();
+  if (invCount.count === 0) {
+    const inv = [
+      // Produce
+      { name: 'Roma Tomatoes', category: 'produce', unit: 'lb', quantity: 25, par: 15, cost: 2.50, supplier: 'Italian Farms Co.' },
+      { name: 'Fresh Basil', category: 'produce', unit: 'bunch', quantity: 8, par: 6, cost: 3.00, supplier: 'Italian Farms Co.' },
+      { name: 'Lemons', category: 'produce', unit: 'ea', quantity: 30, par: 20, cost: 0.50, supplier: 'Local Produce' },
+      { name: 'Garlic', category: 'produce', unit: 'lb', quantity: 5, par: 3, cost: 4.00, supplier: 'Italian Farms Co.' },
+      { name: 'Arugula', category: 'produce', unit: 'lb', quantity: 4, par: 3, cost: 6.00, supplier: 'Local Produce' },
+      { name: 'Red Onions', category: 'produce', unit: 'lb', quantity: 12, par: 8, cost: 1.50, supplier: 'Local Produce' },
+      { name: 'Butternut Squash', category: 'produce', unit: 'ea', quantity: 6, par: 4, cost: 3.50, supplier: 'Local Produce' },
+      // Protein
+      { name: 'Veal Cutlets', category: 'protein', unit: 'lb', quantity: 18, par: 12, cost: 18.00, supplier: 'Premium Meats' },
+      { name: 'Chicken Breast', category: 'protein', unit: 'lb', quantity: 22, par: 15, cost: 8.50, supplier: 'Premium Meats' },
+      { name: 'Filet Mignon (8oz)', category: 'protein', unit: 'ea', quantity: 12, par: 8, cost: 22.00, supplier: 'Premium Meats' },
+      { name: 'Lobster Tails', category: 'protein', unit: 'ea', quantity: 8, par: 6, cost: 16.00, supplier: 'Atlantic Seafood' },
+      { name: 'Sea Scallops', category: 'protein', unit: 'lb', quantity: 5, par: 4, cost: 24.00, supplier: 'Atlantic Seafood' },
+      { name: 'Shrimp (21/25)', category: 'protein', unit: 'lb', quantity: 10, par: 8, cost: 14.00, supplier: 'Atlantic Seafood' },
+      { name: 'Calamari', category: 'protein', unit: 'lb', quantity: 8, par: 6, cost: 10.00, supplier: 'Atlantic Seafood' },
+      { name: 'Prosciutto di Parma', category: 'protein', unit: 'lb', quantity: 4, par: 3, cost: 22.00, supplier: 'Italian Imports' },
+      // Dairy
+      { name: 'Mozzarella di Bufala', category: 'dairy', unit: 'lb', quantity: 8, par: 5, cost: 12.00, supplier: 'Italian Imports' },
+      { name: 'Parmigiano Reggiano', category: 'dairy', unit: 'lb', quantity: 6, par: 4, cost: 18.00, supplier: 'Italian Imports' },
+      { name: 'Gorgonzola', category: 'dairy', unit: 'lb', quantity: 3, par: 2, cost: 14.00, supplier: 'Italian Imports' },
+      { name: 'Heavy Cream', category: 'dairy', unit: 'L', quantity: 12, par: 8, cost: 4.50, supplier: 'Local Dairy' },
+      { name: 'Unsalted Butter', category: 'dairy', unit: 'lb', quantity: 10, par: 6, cost: 5.00, supplier: 'Local Dairy' },
+      { name: 'Goat Cheese', category: 'dairy', unit: 'lb', quantity: 3, par: 2, cost: 16.00, supplier: 'Local Dairy' },
+      // Dry Goods
+      { name: 'Penne Rigate', category: 'dry_goods', unit: 'lb', quantity: 20, par: 10, cost: 3.00, supplier: 'Italian Imports' },
+      { name: 'Linguini', category: 'dry_goods', unit: 'lb', quantity: 18, par: 10, cost: 3.00, supplier: 'Italian Imports' },
+      { name: 'Fettuccini', category: 'dry_goods', unit: 'lb', quantity: 15, par: 10, cost: 3.00, supplier: 'Italian Imports' },
+      { name: 'Extra Virgin Olive Oil', category: 'dry_goods', unit: 'L', quantity: 6, par: 3, cost: 14.00, supplier: 'Italian Imports' },
+      { name: 'San Marzano Tomatoes', category: 'dry_goods', unit: 'can', quantity: 24, par: 12, cost: 4.00, supplier: 'Italian Imports' },
+      { name: 'Capers', category: 'dry_goods', unit: 'jar', quantity: 6, par: 3, cost: 5.50, supplier: 'Italian Imports' },
+      { name: 'Black Olives (Kalamata)', category: 'dry_goods', unit: 'jar', quantity: 4, par: 3, cost: 6.00, supplier: 'Italian Imports' },
+      // Beverages
+      { name: 'Chianti (house)', category: 'beverage', unit: 'bottle', quantity: 24, par: 12, cost: 12.00, supplier: 'Wine Distributors' },
+      { name: 'Pinot Grigio (house)', category: 'beverage', unit: 'bottle', quantity: 18, par: 12, cost: 10.00, supplier: 'Wine Distributors' },
+      { name: 'Prosecco', category: 'beverage', unit: 'bottle', quantity: 12, par: 8, cost: 11.00, supplier: 'Wine Distributors' },
+      { name: 'Peroni (case)', category: 'beverage', unit: 'case', quantity: 4, par: 2, cost: 36.00, supplier: 'Beer Distributors' },
+      { name: 'Espresso Beans', category: 'beverage', unit: 'kg', quantity: 5, par: 3, cost: 28.00, supplier: 'Italian Imports' },
+      { name: 'San Pellegrino', category: 'beverage', unit: 'case', quantity: 3, par: 2, cost: 18.00, supplier: 'Italian Imports' },
+      // Other
+      { name: 'Linen Napkins', category: 'other', unit: 'pack', quantity: 8, par: 4, cost: 12.00, supplier: 'Restaurant Supply' },
+      { name: 'Candles (table)', category: 'other', unit: 'box', quantity: 5, par: 3, cost: 8.00, supplier: 'Restaurant Supply' },
+      { name: 'To-Go Containers', category: 'other', unit: 'pack', quantity: 6, par: 4, cost: 15.00, supplier: 'Restaurant Supply' },
+    ];
+    const invStmt = db.prepare('INSERT INTO inventory_items (name, category, unit, quantity, par_level, cost_per_unit, supplier) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    for (const i of inv) {
+      invStmt.run(i.name, i.category, i.unit, i.quantity, i.par, i.cost, i.supplier);
     }
   }
 }

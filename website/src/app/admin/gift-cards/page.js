@@ -4,6 +4,7 @@ import { IconGift, IconSearch, IconRefresh, IconDollarSign, IconCheck, IconX, Ic
 
 export default function AdminGiftCardsPage() {
   const [cards, setCards] = useState([]);
+  const [stats, setStats] = useState({ total: 0, active_count: 0, total_sold: 0, outstanding_balance: 0, depleted_count: 0 });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
@@ -13,28 +14,41 @@ export default function AdminGiftCardsPage() {
 
   async function loadCards() {
     setLoading(true);
-    const res = await fetch('/api/gift-cards');
-    const data = await res.json();
-    setCards(data);
+    try {
+      const res = await fetch('/api/gift-cards');
+      const data = await res.json();
+      setCards(data.cards || data);
+      if (data.stats) setStats(data.stats);
+    } catch (err) {
+      console.error('Failed to load gift cards:', err);
+    }
     setLoading(false);
   }
 
   async function loadCardDetail(code) {
-    const res = await fetch(`/api/gift-cards/${encodeURIComponent(code)}`);
-    if (res.ok) {
-      const data = await res.json();
-      setSelectedCard(data);
+    try {
+      const res = await fetch(`/api/gift-cards/${encodeURIComponent(code)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setSelectedCard(data);
+      }
+    } catch (err) {
+      console.error('Failed to load card detail:', err);
     }
   }
 
   async function deactivateCard(code) {
-    await fetch(`/api/gift-cards/${encodeURIComponent(code)}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'inactive' }),
-    });
-    loadCards();
-    setSelectedCard(null);
+    try {
+      await fetch(`/api/gift-cards/${encodeURIComponent(code)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'inactive', performed_by: 'admin' }),
+      });
+      loadCards();
+      setSelectedCard(null);
+    } catch (err) {
+      console.error('Failed to deactivate card:', err);
+    }
   }
 
   const filtered = cards.filter(c => {
@@ -50,10 +64,6 @@ export default function AdminGiftCardsPage() {
     }
     return true;
   });
-
-  const totalBalance = cards.reduce((s, c) => s + c.balance, 0);
-  const totalSold = cards.reduce((s, c) => s + c.initial_amount, 0);
-  const activeCount = cards.filter(c => c.status === 'active').length;
 
   return (
     <div>
@@ -75,10 +85,10 @@ export default function AdminGiftCardsPage() {
       {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
         {[
-          { label: 'Total Cards', value: cards.length, color: 'var(--text-primary)' },
-          { label: 'Active', value: activeCount, color: 'var(--success)' },
-          { label: 'Total Sold', value: `$${totalSold.toFixed(2)}`, color: 'var(--gold)' },
-          { label: 'Outstanding Balance', value: `$${totalBalance.toFixed(2)}`, color: 'var(--info)' },
+          { label: 'Total Cards', value: stats.total || cards.length, color: 'var(--text-primary)' },
+          { label: 'Active', value: stats.active_count || 0, color: 'var(--success)' },
+          { label: 'Total Sold', value: `$${(stats.total_sold || 0).toFixed(2)}`, color: 'var(--gold)' },
+          { label: 'Outstanding Balance', value: `$${(stats.outstanding_balance || 0).toFixed(2)}`, color: 'var(--info)' },
         ].map(stat => (
           <div key={stat.label} style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 10, padding: '16px 20px', textAlign: 'center' }}>
             <div style={{ fontSize: '1.6rem', fontWeight: 700, color: stat.color, fontFamily: 'var(--font-heading)' }}>{stat.value}</div>
