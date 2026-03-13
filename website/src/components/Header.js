@@ -37,6 +37,7 @@ export default function Header() {
       key={link.href}
       href={link.href}
       className={`${styles.navLink} ${pathname === link.href ? styles.navLinkActive : ''}`}
+      aria-current={pathname === link.href ? 'page' : undefined}
       onClick={() => setMenuOpen(false)}
     >
       {link.label}
@@ -48,10 +49,10 @@ export default function Header() {
       <div className={styles.inner}>
         {/* Left group: Logo + Home & Menu */}
         <div className={styles.leftGroup}>
-          <Link href="/" className={styles.logo}>
+          <Link href="/" className={styles.logo} aria-label="Antico Ristoranté — Home">
             <Image
               src="/images/antico-logo-transparent.png"
-              alt="Antico"
+              alt="Antico Ristoranté"
               width={120}
               height={50}
               className={styles.logoImg}
@@ -59,18 +60,19 @@ export default function Header() {
             />
           </Link>
 
-          <nav className={styles.leftNav}>
+          <nav className={styles.leftNav} aria-label="Main navigation">
             {LEFT_LINKS.map(renderLink)}
           </nav>
         </div>
 
-        {/* Right group: The Chef, Gallery, Contact, Reserve */}
-        <nav className={`${styles.rightNav} ${menuOpen ? styles.navOpen : ''}`}>
+        {/* Right group: Contact, Reserve */}
+        <nav className={`${styles.rightNav} ${menuOpen ? styles.navOpen : ''}`} aria-label="Site navigation">
           {LEFT_LINKS.map(renderLink)}
           {RIGHT_LINKS.map(renderLink)}
           <Link
             href="/reserve"
             className={`btn btn-gold ${styles.reserveBtn} ${pathname === '/reserve' ? styles.reserveBtnActive : ''}`}
+            aria-current={pathname === '/reserve' ? 'page' : undefined}
             onClick={() => setMenuOpen(false)}
           >
             Reserve a Table
@@ -80,7 +82,8 @@ export default function Header() {
         <button
           className={`${styles.hamburger} ${menuOpen ? styles.hamburgerOpen : ''}`}
           onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
         >
           <span />
           <span />

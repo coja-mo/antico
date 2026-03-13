@@ -7,7 +7,21 @@ export default function ScrollReveal({ children, className }) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
+    // Respect reduced-motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     const targets = el.querySelectorAll('[data-reveal]');
+
+    if (prefersReducedMotion) {
+      // Show everything immediately without animation
+      targets.forEach(t => {
+        t.style.opacity = '1';
+        t.style.transform = 'none';
+      });
+      return;
+    }
+
     const io = new IntersectionObserver((entries) => {
       entries.forEach(e => {
         if (e.isIntersecting) {

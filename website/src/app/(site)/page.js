@@ -31,7 +31,7 @@ export default function Home() {
 
       {/* ── ABOUT TEASER ── */}
       <ScrollReveal>
-        <section className={styles.about}>
+        <section className={styles.about} aria-label="Our Story">
           <div className={styles.aboutInner}>
             <div className={styles.aboutText} data-reveal>
               <p className={styles.sectionLabel}>Our Story</p>
@@ -70,7 +70,7 @@ export default function Home() {
 
       {/* ── MENU PREVIEW ── */}
       <ScrollReveal>
-        <section className={styles.menuPreview}>
+        <section className={styles.menuPreview} aria-label="Signature Dishes">
           <div className={styles.menuPreviewInner}>
             <div data-reveal>
               <p className={styles.sectionLabel}>From the Kitchen</p>
@@ -101,7 +101,7 @@ export default function Home() {
 
       {/* ── ATMOSPHERE ── */}
       <ScrollReveal>
-        <section className={styles.atmosphere}>
+        <section className={styles.atmosphere} aria-label="The Experience">
           <div className={styles.atmosphereInner}>
             <div data-reveal>
               <p className={styles.sectionLabel}>The Experience</p>
@@ -136,7 +136,7 @@ export default function Home() {
 
       {/* ── RESERVATION CTA ── */}
       <ScrollReveal>
-        <section className={styles.ctaSection}>
+        <section className={styles.ctaSection} aria-label="Make a Reservation">
           <div className={styles.ctaInner} data-reveal>
             <p className={styles.ctaScript}>Your table awaits</p>
             <h2>Join Us for an Unforgettable Evening</h2>
